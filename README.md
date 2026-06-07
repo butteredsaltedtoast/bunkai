@@ -7,6 +7,8 @@ Bunkai is a browser extension that breaks down Japanese sentences into a word-by
 - Highlight any Japanese text on any webpage to instantly analyze it
 - See the overall meaning of the sentence in natural English
 - Get a breakdown of each word — reading, part of speech, meaning, and its specific role in the sentence
+- Require shift+highlight to trigger analysis (on by default)
+- Toggle the extension on/off without uninstalling
 - Clean popup UI that dismisses when you click away
 
 ## Installation
@@ -19,7 +21,7 @@ Bunkai is a browser extension that breaks down Japanese sentences into a word-by
 
 ## Usage
 
-Just highlight any Japanese text on any webpage. A popup will appear with the full breakdown.
+Highlight any Japanese text on any webpage. If shift+highlight is enabled (default), hold **Shift** while highlighting to trigger the analysis. A popup will appear with the full breakdown.
 
 ## Stack
 
