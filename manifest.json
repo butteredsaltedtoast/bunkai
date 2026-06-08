@@ -3,6 +3,11 @@
   "name": "Bunkai",
   "version": "1.0",
   "description": "Highlight Japanese text for an AI-powered word-by-word breakdown using Google Gemini",
+  "icons": {
+  "16": "icon16.png",
+  "48": "icon48.png",
+  "128": "icon128.png"
+  },
   "permissions": ["activeTab", "scripting", "contextMenus", "storage"],
   "background": {
     "service_worker": "background.js"
