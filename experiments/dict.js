@@ -1,8 +1,8 @@
-const data = require('./data/jmdict-eng-3.6.2.json')
+const data = require('./data/jmdict-eng-3.6.2-small.json')
 const spellingToEntries = new Map()
-for(const entry of data.words) {
-    for(const s of [...entry.kanji, ...entry.kana]) {
-        const k = s.text;
+for(const entry of data) {
+    for(const s of [...entry.k, ...entry.r]) {
+        const k = s.t;
         if(!spellingToEntries.has(k)) {
             spellingToEntries.set(k, [])
         }

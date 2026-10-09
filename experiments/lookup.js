@@ -7,22 +7,22 @@ function lookup(base, pos, reading) {
         return "???";
     if(pos === "助詞")
     {
-        const prts = entries.filter(e => e.sense.some(s => s.partOfSpeech.includes("prt")));
+        const prts = entries.filter(e => e.s.some(s => s.p.includes("prt")));
         if(prts.length)
             entries = prts;
     }
     const r = toHira(reading);
-    const byReading = entries.filter(e => e.kana.some(k => r.startsWith(k.text.slice(0, -1))));
+    const byReading = entries.filter(e => e.r.some(k => r.startsWith(k.t.slice(0, -1))));
     if(byReading.length)
         entries = byReading;
     const hasKanji = /[\u4e00-\u9faf]/.test(base);
     if(!hasKanji) {
-        const uk = entries.filter(e => e.sense.some(s => s.misc.includes("uk")));
+        const uk = entries.filter(e => e.s.some(s => s.m?.includes("uk")));
         if(uk.length)
             entries = uk;
     }
-    const pick = entries.find(e => [...e.kanji, ...e.kana].some(s => s.common)) || entries[0];
-    return pick.sense[0].gloss[0].text;
+    const pick = entries.find(e => [...e.k, ...e.r].some(s => s.c)) || entries[0];
+    return pick.s[0].g[0];
 }
 
 function toHira(s) {
