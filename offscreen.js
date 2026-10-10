@@ -1,14 +1,33 @@
-kuromoji.builder({dicPath: "lib/dict"}).build(async (err, t) => {
-    if(err)
-    {
-        console.error(err);
+const ready = new Promise(resolve => {
+    kuromoji.builder({dicPath: "lib/dict"}).build(async (err, t) => {
+        if(err)
+        {
+            console.error(err);
+            return;
+        }
+        await loadDict();
+        resolve(t);
+    });
+});
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if(msg.type !== "OFFSCREEN_ANALYZE")
         return;
-    }
-    console.log("ready!");
-    console.log(merge(t.tokenize("食べられなかった")));
-    await loadDict();
-    for(const c of merge(t.tokenize("食べられなかった"))) {
-        console.log(c);
-        console.log(lookup(c.base_form, c.pos, c.stemReading));
-    }
-})
+    analyze(msg.text).then(sendResponse);
+    return true;
+});
+
+async function analyze(text) {
+    const t = await ready;
+    // merge tokens
+    const tokens = merge(t.tokenize(text));
+    const words = tokens.map(tok => ({
+        word: tok.surface,
+        reading: toHira(tok.reading),
+        dictionary_form: tok.base_form,
+        part_of_speech: tok.pos,
+        meaning: lookup(tok.base_form, tok.pos, tok.stemReading),
+        role: ""
+    }));
+    return {result: {original: text, overall_meaning: "", words}};
+}
