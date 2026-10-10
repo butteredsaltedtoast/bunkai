@@ -9,7 +9,7 @@ function segment(s) {
             if(dict.has(w))
                 c = cost(w);
             else if(w.length === 1)
-                c = 5;
+                c = 8;
             else
                 continue;
             if(best[j] + c < best[k]) {
@@ -31,6 +31,9 @@ function segment(s) {
     return result.reverse();
 }
 
+const PARTICLES = ["は", "が", "を", "に", "で", "と", "も", "の", "へ", "から", "まで", "より"];
 function cost(w) {
+    if(PARTICLES.includes(w))
+        return 0.2;
     return 0.5 + (Math.min(...dict.get(w).map(e => e.f))) / 20;
 }

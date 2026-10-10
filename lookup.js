@@ -30,6 +30,7 @@ function lookup(base, pos, reading, detail) {
             entries = uk;
     }
     entries = [...entries].sort((a, b) => a.f - b.f);
+    entries = entries.filter(e => e.f <= entries[0].f + 10);
     if(entries[0].f < 99)
         entries = entries.filter(e => e.f < 99);
     const top = entries.slice(0, 3);
