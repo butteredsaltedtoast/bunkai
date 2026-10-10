@@ -36,10 +36,11 @@ function kanaChunks(text) {
     const chunks = [];
     for(const run of runs) {
         const isHira = /^[\u3041-\u309f]/.test(run);
-        const words = isHira ? segment(run) : [run];
+        const words = isHira ? segment(run) : [{surface: run, base: run}];
         for(const w of words) {
-            const isParticle = dict.get(w)?.some(e => e.s.some(s => s.p.includes("prt")));
-            chunks.push({surface: w, reading: w, stemReading: w, base_form: w, pos: isParticle ? "助詞" : ""});
+            const isVerb = w.base !== w.surface;
+            const isParticle = dict.get(w.base)?.some(e => e.s.some(s => s.p.includes("prt")));
+            chunks.push({surface: w.surface, reading: w.surface, stemReading: w.base, base_form: w.base, pos: isVerb ? "動詞" : isParticle ? "助詞" : ""});
         }
     }
     return chunks;
