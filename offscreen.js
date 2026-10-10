@@ -25,7 +25,7 @@ async function analyze(text) {
         reading: toHira(tok.reading),
         dictionary_form: tok.base_form,
         part_of_speech: tok.pos,
-        meaning: lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
+        meaning: tok.bases?.length > 1 ? tok.bases.map(b => `${b}: ${lookup(b, tok.pos, b)}`).join(" / ") : lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
         role: ""
     }));
     return {result: {original: text, overall_meaning: "", words}};
@@ -36,11 +36,12 @@ function kanaChunks(text) {
     const chunks = [];
     for(const run of runs) {
         const isHira = /^[\u3041-\u309f]/.test(run);
-        const words = isHira ? segment(run) : [{surface: run, base: run}];
+        const words = isHira ? segment(run) : [{surface: run, bases: [run]}];
         for(const w of words) {
-            const isVerb = w.base !== w.surface;
-            const isParticle = dict.get(w.base)?.some(e => e.s.some(s => s.p.includes("prt")));
-            chunks.push({surface: w.surface, reading: w.surface, stemReading: w.base, base_form: w.base, pos: isVerb ? "動詞" : isParticle ? "助詞" : ""});
+            const base = w.bases[0];
+            const isVerb = base !== w.surface;
+            const isParticle = !isVerb && dict.get(base)?.some(e => e.s.some(s => s.p.includes("prt")));
+            chunks.push({surface: w.surface, reading: w.surface, stemReading: base, base_form: base, bases: w.bases, pos: isVerb ? "動詞" : isParticle ? "助詞" : ""});
         }
     }
     return chunks;
