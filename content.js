@@ -63,7 +63,7 @@ function showLoading(x, y) {
 
 function showError(msg, x, y) {
     const el = createPopup(x, y);
-    el.innerHTML = `<div class="jp-error">${msg}</div>`;
+    el.innerHTML = `<div class="jp-error">${esc(msg)}</div>`;
 }
 
 function showResult(data, x, y) {
@@ -72,21 +72,21 @@ function showResult(data, x, y) {
     const words = data.words.map(w => `
         <div class="jp-word">
             <div class="jp-word-top">
-                <span class="jp-surface">${w.word}</span>
-                <span class="jp-reading">(${w.reading})</span>
-                <span class = "jp-pos">${w.part_of_speech}</span>
+                <span class="jp-surface">${esc(w.word)}</span>
+                <span class="jp-reading">(${esc(w.reading)})</span>
+                <span class = "jp-pos">${esc(w.part_of_speech)}</span>
             </div>
-            <div class="jp-meaning">${w.meaning}</div>
-            <div class="jp-role">${w.role}</div>
+            <div class="jp-meaning">${esc(w.meaning)}</div>
+            <div class="jp-role">${esc(w.role)}</div>
         </div>
     `).join("");
     
     el.innerHTML = `
         <div class="jp-header">
-            <span class="jp-original">${data.original}</span>
+            <span class="jp-original">${esc(data.original)}</span>
             <button class="jp-close" id="jp-close-btn">✕</button>
         </div>
-        <div class="jp-translation">${data.overall_meaning}</div>
+        <div class="jp-translation">${esc(data.overall_meaning)}</div>
         <div class="jp-divider"></div>
         <div class="jp-words">${words}</div>
     `;
@@ -114,4 +114,10 @@ function analyze(text, x, y) {
             }
         }
     );
+}
+
+function esc(s) {
+    return String(s ?? "").replace(/[&<>'"]/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[c]);
 }
