@@ -1,4 +1,4 @@
-const data = require('./data/jmdict-eng-3.6.2-small.json')
+const data = require('../data/jmdict.json')
 const spellingToEntries = new Map()
 for(const entry of data) {
     for(const s of [...entry.k, ...entry.r]) {
