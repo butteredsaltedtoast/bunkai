@@ -18,6 +18,8 @@ for(const chunk of xml.split("<entry")) {
         score = 49;
     else if (tags.some(t => ["news2", "ichi2", "spec2", "gai1"].includes(t)))
         score = 60;
+    if(tags.includes("ichi1"))
+        score = Math.min(score, 10);
     freq.set(id, score);
 }
 
