@@ -1,3 +1,41 @@
+#jp-breakdown-popup, #jp-breakdown-btn {
+    --paper: #faf7f0;
+    --ink: #1a1a1a;
+    --red: #c8361d;
+    --shadow: rgba(0, 0, 0, 0.12);
+    --muted: #888;
+    --translation: #555;
+    --divider: #ccc;
+    --meaning: #333;
+    --border: var(--ink);
+}
+
+#jp-breakdown-popup[data-theme="dark"], #jp-breakdown-btn[data-theme="dark"] {
+    --paper: #1c1b19;
+    --ink: #faf7f0;
+    --red: #e5533a;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --muted: #999;
+    --translation: #bbb;
+    --divider: #444;
+    --meaning: #ddd;
+    --border: #555;
+}
+
+@media (prefers-color-scheme: dark) {
+    #jp-breakdown-popup[data-theme="auto"], #jp-breakdown-btn[data-theme="auto"] {
+        --paper: #1c1b19;
+        --ink: #faf7f0;
+        --red: #e5533a;
+        --shadow: rgba(0, 0, 0, 0.5);
+        --muted: #999;
+        --translation: #bbb;
+        --divider: #444;
+        --meaning: #ddd;
+        --border: #555;
+    }
+}
+
 #jp-breakdown-popup {
     all: initial;
     position: absolute;
@@ -5,11 +43,11 @@
     width: 320px;
     max-height: 420px;
     overflow-y: auto;
-    background: #faf7f0;
-    color: #1a1a1a;
-    border: 1px solid #1a1a1a;
-    border-top: 3px solid #c8361d;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.12);
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--red);
+    box-shadow: 4px 4px 0 var(--shadow);
     font: 13px/1.5 system-ui, sans-serif;
     padding: 14px 16px;
     box-sizing: border-box;
@@ -22,16 +60,16 @@
     all: initial;
     position: absolute;
     z-index: 2147483647;
-    background: #faf7f0;
-    color: #c8361d;
-    border: 1px solid #c8361d;
+    background: var(--paper);
+    color: var(--red);
+    border: 1px solid var(--red);
     font: 13px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
     padding: 2px 8px;
     cursor: pointer;
 }
 #jp-breakdown-btn:hover {
-    background: #c8361d;
-    color: #faf7f0;
+    background: var(--red);
+    color: var(--paper);
 }
 
 .jp-header {
@@ -44,21 +82,21 @@
 
 .jp-original {
     font: 17px/1.6 "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-    color: #1a1a1a;
+    color: var(--ink);
 }
 
 .jp-close {
     all: unset;
-    color: #888;
+    color: var(--muted);
     font-size: 14px;
     cursor: pointer;
 }
 .jp-close:hover {
-    color: #c8361d;
+    color: var(--red);
 }
 
 .jp-translation {
-    color: #555;
+    color: var(--translation);
     font-style: italic;
     margin-bottom: 8px;
 }
@@ -68,13 +106,13 @@
 
 .jp-divider {
     height: 1px;
-    background: #1a1a1a;
+    background: var(--ink);
     margin-bottom: 10px;
 }
 
 .jp-word {
     padding: 8px 0;
-    border-bottom: 1px dashed #ccc;
+    border-bottom: 1px dashed var(--divider);
 }
 .jp-word:last-child {
     border-bottom: none;
@@ -88,19 +126,19 @@
 
 .jp-surface {
     font: 18px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-    color: #1a1a1a;
+    color: var(--ink);
 }
 
 .jp-reading {
     font-size: 11px;
-    color: #888;
+    color: var(--muted);
 }
 
 .jp-pos {
     margin-left: auto;
     font-size: 10px;
-    color: #c8361d;
-    border: 1px solid #c8361d;
+    color: var(--red);
+    border: 1px solid var(--red);
     padding: 0 4px;
 }
 .jp-pos:empty {
@@ -108,22 +146,22 @@
 }
 
 .jp-meaning {
-    color: #333;
+    color: var(--meaning);
     margin-top: 2px;
 }
 
 .jp-role {
     font-size: 11px;
-    color: #888;
+    color: var(--muted);
     font-style: italic;
 }
 
 .jp-loading, .jp-error {
     text-align: center;
     padding: 12px;
-    color: #888;
+    color: var(--muted);
 }
 
 .jp-error {
-    color: #c8361d;
+    color: var(--red);
 }

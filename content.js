@@ -1,27 +1,6 @@
 let popupElement = null;
 let buttonElement = null;
-
-function showButton(text, x, y) {
-    if(buttonElement) {
-        buttonElement.remove();
-        buttonElement = null;
-    }
-    const btn = document.createElement("button");
-    btn.id = "jp-breakdown-btn";
-    btn.textContent = "分解";
-    btn.style.left = `${x + window.scrollX + 8}px`;
-    btn.style.top = `${y + window.scrollY + 8}px`;
-    btn.addEventListener("mousedown", ev => ev.preventDefault());
-    btn.addEventListener("click", () => {
-        if(buttonElement) {
-            buttonElement.remove();
-            buttonElement = null;
-        }
-        analyze(text, x, y);
-    });
-    document.body.appendChild(btn);
-    buttonElement = btn;
-}
+let currentTheme = "auto";
 
 document.addEventListener("mouseup", (e) => {
     if(buttonElement && buttonElement.contains(e.target))
@@ -39,21 +18,46 @@ document.addEventListener("mouseup", (e) => {
         return
     if(!/[\u3000-\u9fff\uff00-\uffef]/.test(selected))
         return;
-    chrome.storage.sync.get(["enabled"], (data) => {
+    chrome.storage.sync.get(["enabled", "theme"], (data) => {
         if(data.enabled === false)
             return;
+        currentTheme = data.theme || "auto";
         showButton(selected, e.clientX, e.clientY);
-    })
+    });
 });
 
 function createPopup(x, y) {
     const el = document.createElement("div");
     el.id = "jp-breakdown-popup";
+    el.dataset.theme = currentTheme;
     el.style.left = `${Math.min(x, window.innerWidth - 340)}px`;
     el.style.top = `${y + window.scrollY + 16}px`;
     document.body.appendChild(el);
     popupElement = el;
     return el;
+}
+
+function showButton(text, x, y) {
+    if(buttonElement) {
+        buttonElement.remove();
+        buttonElement = null;
+    }
+    const btn = document.createElement("button");
+    btn.id = "jp-breakdown-btn";
+    btn.dataset.theme = currentTheme;
+    btn.textContent = "分解";
+    btn.style.left = `${x + window.scrollX + 8}px`;
+    btn.style.top = `${y + window.scrollY + 8}px`;
+    btn.addEventListener("mousedown", ev => ev.preventDefault());
+    btn.addEventListener("click", () => {
+        if(buttonElement) {
+            buttonElement.remove();
+            buttonElement = null;
+        }
+        analyze(text, x, y);
+    });
+    document.body.appendChild(btn);
+    buttonElement = btn;
 }
 
 function showLoading(x, y) {
