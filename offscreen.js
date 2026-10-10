@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 async function analyze(text) {
     const t = await ready;
     // merge tokens
-    const tokens = merge(t.tokenize(text));
+    const tokens = merge(t.tokenize(text)).filter(c => c.pos !== "記号");
     const words = tokens.map(tok => ({
         word: tok.surface,
         reading: toHira(tok.reading),

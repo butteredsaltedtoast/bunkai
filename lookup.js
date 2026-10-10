@@ -20,8 +20,13 @@ function lookup(base, pos, reading) {
         if(uk.length)
             entries = uk;
     }
-    const pick = entries.find(e => [...e.k, ...e.r].some(s => s.c)) || entries[0];
-    return pick.s[0].g[0];
+    entries = [...entries].sort((a, b) => a.f - b.f);
+    if(entries[0].f === 99)
+        entries = entries.filter(e => e.f === 99);
+    const top = entries.slice(0, 3);
+    if(top.length == 1)
+        return top[0].s[0].g[0];
+    return top.map(e => `${e.k[0]?.t || e.r[0].t}: ${e.s[0].g[0]}`).join(" / ");
 }
 
 function toHira(s) {
