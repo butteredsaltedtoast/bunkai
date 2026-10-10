@@ -3,7 +3,7 @@ const small = []
 const fs = require("fs");
 
 const xml = fs.readFileSync("data/JMdict_e", "utf-8");
-var freq = new Map();
+const freq = new Map();
 
 for(const chunk of xml.split("<entry")) {
     const id = chunk.match(/<ent_seq>(\d+)<\/ent_seq>/)?.[1];
@@ -32,5 +32,5 @@ for(const entry of bigjson.words) {
     }
     small.push(newEntry);
 }
-fs.writeFileSync("data/jmdict-eng-3.6.2-small.json", JSON.stringify(small));
-console.log("file size: " + fs.statSync("data/jmdict-eng-3.6.2-small.json").size);
+fs.writeFileSync("../data/jmdict.json", JSON.stringify(small));
+console.log("file size: " + fs.statSync("../data/jmdict.json").size);
