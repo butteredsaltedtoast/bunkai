@@ -9,6 +9,7 @@ const ENDINGS = [
     ["ない", 1], ["なかった", 1],
     ["て", 2], ["で", 2], ["た", 2], ["だ", 2], ["ている", 2], ["ています", 2], ["ていました", 2], ["でいます", 2],
 ];
+const ADJ_ENDINGS = ["かった", "くない", "くなかった", "くて", "ければ", "く"];
 
 function deinflect(word) {
     const results = [];
@@ -25,5 +26,12 @@ function deinflect(word) {
             if(stems[type] === last)
                 results.push(rest + dictEnding);
     }
-    return [...new Set(results)].filter(c => dict.get(c)?.some(e => e.s.some(s => s.p.some(p => p.startsWith("v")))));
+    for(const ending of ADJ_ENDINGS)
+    {
+        if(!word.endsWith(ending))
+            continue;
+        results.push(word.slice(0, -ending.length) + "い");
+    }
+
+    return [...new Set(results)].filter(c => dict.get(c)?.some(e => e.s.some(s => s.p.some(p => p.startsWith("v") || p === "adj-i"))));
 }

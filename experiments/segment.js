@@ -1,6 +1,6 @@
 const dict = require("./dict");
 const {deinflect} = require("./deinflect");
-const PARTICLES = ["は", "が", "を", "に", "で", "と", "も", "の", "へ", "から", "まで", "より"];
+const CHEAP = ["は", "が", "を", "に", "で", "と", "も", "の", "へ", "から", "まで", "より", "です", "でした", "だ", "だった"];
 function segment(s) {
     const best = new Array(s.length + 1).fill(Infinity);
     best[0] = 0;
@@ -10,7 +10,9 @@ function segment(s) {
         for(let j = Math.max(0, k - 10); j < k; j++) {
             const w = s.slice(j, k);
             let c, bases = [w];
-            if(dict.has(w))
+            if(CHEAP.includes(w))
+                c = 0.2;
+            else if(dict.has(w))
                 c = cost(w);
             else {
                 const cands = deinflect(w);
@@ -44,9 +46,10 @@ function segment(s) {
 }
 
 function cost(w) {
-    if(PARTICLES.includes(w))
+    if(CHEAP.includes(w))
         return 0.2;
     return 0.5 + (Math.min(...dict.get(w).map(e => e.f))) / 20;
 }
 
-console.log(segment("としょかんへいきます"));
+console.log(segment("きのうはたのしかったです"));
+console.log(segment("このりんごはおいしくない"));
