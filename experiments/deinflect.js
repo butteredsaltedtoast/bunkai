@@ -29,8 +29,4 @@ function deinflect(word) {
     return [...new Set(results)].filter(c => dict.get(c)?.some(e => e.s.some(s => s.p.some(p => p.startsWith("v")))));
 }
 
-console.log(deinflect("みます"));
-console.log(deinflect("ふっています"));
-console.log(deinflect("たべました"));
-console.log(deinflect("しません"));
-console.log(deinflect("よんでいます"));
+module.exports = {deinflect};
