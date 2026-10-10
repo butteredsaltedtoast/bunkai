@@ -1,4 +1,3 @@
-const dict = require("./dict");
 function segment(s) {
     const best = new Array(s.length + 1).fill(Infinity);
     best[0] = 0;
@@ -33,7 +32,5 @@ function segment(s) {
 }
 
 function cost(w) {
-    return 1 + (Math.min(...dict.get(w).map(e => e.f))) / 99;
+    return 0.5 + (Math.min(...dict.get(w).map(e => e.f))) / 20;
 }
-
-console.log(segment("わたしのなまえはまりあです"));

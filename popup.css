@@ -103,6 +103,9 @@
     border: 1px solid #c8361d;
     padding: 0 4px;
 }
+.jp-pos:empty {
+    display: none;
+}
 
 .jp-meaning {
     color: #333;

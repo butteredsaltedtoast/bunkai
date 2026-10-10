@@ -19,8 +19,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 async function analyze(text) {
     const t = await ready;
-    // merge tokens
-    const tokens = merge(t.tokenize(text)).filter(c => c.pos !== "記号");
+    const tokens = /[\u4e00-\u9faf]/.test(text) ? merge(t.tokenize(text)).filter(c => c.pos !== "記号") : kanaChunks(text);
     const words = tokens.map(tok => ({
         word: tok.surface,
         reading: toHira(tok.reading),
@@ -30,4 +29,18 @@ async function analyze(text) {
         role: ""
     }));
     return {result: {original: text, overall_meaning: "", words}};
+}
+
+function kanaChunks(text) {
+    const runs = text.match(/[\u3041-\u309f]+|[\u30a0-\u30ff]+/g) || [];
+    const chunks = [];
+    for(const run of runs) {
+        const isHira = /^[\u3041-\u309f]/.test(run);
+        const words = isHira ? segment(run) : [run];
+        for(const w of words) {
+            const isParticle = dict.get(w)?.some(e => e.s.some(s => s.p.includes("prt")));
+            chunks.push({surface: w, reading: w, stemReading: w, base_form: w, pos: isParticle ? "助詞" : ""});
+        }
+    }
+    return chunks;
 }
