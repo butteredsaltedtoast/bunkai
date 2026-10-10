@@ -26,7 +26,7 @@ async function analyze(text) {
         reading: toHira(tok.reading),
         dictionary_form: tok.base_form,
         part_of_speech: tok.pos,
-        meaning: lookup(tok.base_form, tok.pos, tok.stemReading),
+        meaning: lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
         role: ""
     }));
     return {result: {original: text, overall_meaning: "", words}};
