@@ -15,6 +15,14 @@
     box-sizing: border-box;
 }
 
+#jp-breakdown-btn {
+    position: absolute;
+    z-index: 2147483647;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 .jp-header {
     display: flex;
     justify-content: space-between;

@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Bunkai",
-  "version": "1.0",
-  "description": "Highlight Japanese text for an AI-powered word-by-word breakdown using Google Gemini",
+  "version": "2.0",
+  "description": "Highlight Japanese text for a word-by-word breakdown. Now runs fully offline, no API key needed!",
   "icons": {
-  "16": "icon16.png",
-  "48": "icon48.png",
-  "128": "icon128.png"
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   },
-  "permissions": ["activeTab", "scripting", "contextMenus", "storage", "offscreen"],
+  "permissions": ["storage", "offscreen"],
   "background": {
     "service_worker": "background.js"
   },

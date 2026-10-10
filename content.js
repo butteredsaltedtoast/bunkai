@@ -1,47 +1,49 @@
 let popupElement = null;
+let buttonElement = null;
+
+function showButton(text, x, y) {
+    if(buttonElement) {
+        buttonElement.remove();
+        buttonElement = null;
+    }
+    const btn = document.createElement("button");
+    btn.id = "jp-breakdown-btn";
+    btn.textContent = "分解";
+    btn.style.left = `${x + window.scrollX + 8}px`;
+    btn.style.top = `${y + window.scrollY + 8}px`;
+    btn.addEventListener("mousedown", ev => ev.preventDefault());
+    btn.addEventListener("click", () => {
+        if(buttonElement) {
+            buttonElement.remove();
+            buttonElement = null;
+        }
+        analyze(text, x, y);
+    });
+    document.body.appendChild(btn);
+    buttonElement = btn;
+}
 
 document.addEventListener("mouseup", (e) => {
+    if(buttonElement && buttonElement.contains(e.target))
+        return;
     const selected = window.getSelection().toString().trim();
-
-    if (popupElement) {
+    if(popupElement) {
         popupElement.remove();
         popupElement = null;
     }
-
-    if (!selected || selected.length === 0) return;
-    if (!/[\u3000-\u9fff\uff00-\uffef]/.test(selected)) return;
-
-    chrome.storage.sync.get(["enabled", "shiftKey"], (data) => {
-        const isEnabled = data.enabled !== false;
-        const requireShift = data.shiftKey !== false;
-
-        if (!isEnabled) return;
-        if (requireShift && !e.shiftKey) return;
-
-        showLoading(e.clientX, e.clientY);
-
-        chrome.runtime.sendMessage(
-            { type: "ANALYZE_TEXT", text: selected },
-            (response) => {
-                if (popupElement) {
-                    popupElement.remove();
-                    popupElement = null;
-                }
-                if (response.error) {
-                    showError(response.error, e.clientX, e.clientY);
-                } else {
-                    showResult(response.result, e.clientX, e.clientY);
-                }
-            }
-        );
-    });
-});
-
-document.addEventListener("mousedown", (e) => {
-    if (popupElement && !popupElement.contains(e.target)) {
-        popupElement.remove();
-        popupElement = null;
+    if(buttonElement) {
+        buttonElement.remove();
+        buttonElement = null;
     }
+    if(!selected)
+        return
+    if(!/[\u3000-\u9fff\uff00-\uffef]/.test(selected))
+        return;
+    chrome.storage.sync.get(["enabled"], (data) => {
+        if(data.enabled === false)
+            return;
+        showButton(selected, e.clientX, e.clientY);
+    })
 });
 
 function createPopup(x, y) {
@@ -60,8 +62,8 @@ function showLoading(x, y) {
 }
 
 function showError(msg, x, y) {
-  const el = createPopup(x, y);
-  el.innerHTML = `<div class="jp-error">${msg}</div>`;
+    const el = createPopup(x, y);
+    el.innerHTML = `<div class="jp-error">${msg}</div>`;
 }
 
 function showResult(data, x, y) {
@@ -93,4 +95,23 @@ function showResult(data, x, y) {
         el.remove();
         popupElement = null;
     });
+}
+
+function analyze(text, x, y) {
+    showLoading(x, y);
+
+    chrome.runtime.sendMessage(
+        { type: "ANALYZE_TEXT", text: text },
+        (response) => {
+            if (popupElement) {
+                popupElement.remove();
+                popupElement = null;
+            }
+            if (response.error) {
+                showError(response.error, x, y);
+            } else {
+                showResult(response.result, x, y);
+            }
+        }
+    );
 }

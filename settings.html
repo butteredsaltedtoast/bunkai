@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>JP Breakdown Settings</title>
+  <title>Bunkai Settings</title>
   <style>
     body {
       width: 280px;
@@ -83,20 +83,11 @@
 <body>
     <h2>Bunkai Settings</h2>
 
-    <label for="apiKey">Gemini API Key</label>
-    <input type="password" id="apiKey" placeholder="AIza..." />
-
     <div class="toggle-row">
         <label for="enabled">Enable Bunkai</label>
         <input type="checkbox" id="enabled" />
     </div>
 
-    <div class="toggle-row">
-        <label for="shiftKey">Require Shift to analyze</label>
-        <input type="checkbox" id="shiftKey" />
-    </div>
-
-    <button id="saveBtn">Save</button>
     <div id="status"></div>
     <script src="settings.js"></script>
 </body>
