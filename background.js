@@ -17,6 +17,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
+chrome.commands.onCommand.addListener((command, tab) => {
+    if(command === "analyze-selection")
+        chrome.tabs.sendMessage(tab.id, {type: "SHORTCUT"});
+});
+
 async function analyzeText(text) {
     await ensureOffscreen();
     return chrome.runtime.sendMessage({type: "OFFSCREEN_ANALYZE", text});

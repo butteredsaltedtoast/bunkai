@@ -39,6 +39,32 @@ document.addEventListener("keydown", (e) => {
     }
 })
 
+chrome.runtime.onMessage.addListener((msg) => {
+    if(msg.type !== "SHORTCUT")
+        return;
+    const sel = window.getSelection();
+    const text = sel.toString().trim();
+    if(!text || !sel.rangeCount)
+        return;
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    chrome.storage.sync.get(["enabled", "theme"], (data) => {
+        if(data.enabled == false)
+            return;
+        if(!/[\u3000-\u9fff\uff00-\uffef]/.test(text))
+            return;
+        currentTheme = data.theme || "auto";
+        if(buttonElement) {
+            buttonElement.remove();
+            buttonElement = null;
+        }
+        if(popupElement) {
+            popupElement.remove();
+            popupElement = null;
+        }
+        analyze(text, rect.left, rect.bottom);
+    })
+})
+
 function createPopup(x, y) {
     const el = document.createElement("div");
     el.id = "jp-breakdown-popup";
