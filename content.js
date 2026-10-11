@@ -26,12 +26,29 @@ document.addEventListener("mouseup", (e) => {
     });
 });
 
+document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape") {
+        if(popupElement) {
+            popupElement.remove();
+            popupElement = null;
+        }
+        if(buttonElement) {
+            buttonElement.remove();
+            buttonElement = null;
+        }
+    }
+})
+
 function createPopup(x, y) {
     const el = document.createElement("div");
     el.id = "jp-breakdown-popup";
     el.dataset.theme = currentTheme;
-    el.style.left = `${Math.min(x, window.innerWidth - 340)}px`;
-    el.style.top = `${y + window.scrollY + 16}px`;
+    const left = Math.max(8, Math.min(x, window.innerWidth - 340));
+    const spaceBelow = window.innerHeight - y;
+    const top = spaceBelow < 440 ? y - 440 : y + 16;
+
+    el.style.left = `${left + window.scrollX}px`;
+    el.style.top = `${Math.max(8, top) + window.scrollY}px`;
     document.body.appendChild(el);
     popupElement = el;
     return el;
