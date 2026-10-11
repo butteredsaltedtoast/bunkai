@@ -40,7 +40,18 @@ function segment(s) {
         result.push({surface: s.slice(j, k), bases: baseAt[k]});
         k = j;
     }
-    return result.reverse();
+    const out = [];
+    for(const w of result.reverse()) {
+        const prev = out[out.length - 1];
+        const canSuru = prev && dict.get(prev.bases[0])?.some(e => e.s.some(s => s.p.includes("vs")));
+        if(canSuru && w.bases.includes("する")) {
+            prev.surface += w.surface;
+            prev.bases = [prev.bases[0] + "する"];
+        }
+        else
+            out.push(w);
+    }
+    return out;
 }
 
 function cost(w) {
