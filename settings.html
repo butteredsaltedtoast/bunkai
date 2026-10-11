@@ -5,78 +5,81 @@
   <title>Bunkai Settings</title>
   <style>
     body {
-      width: 280px;
-      padding: 16px;
-      font-family: 'Segoe UI', sans-serif;
-      background: #1e1e2e;
-      color: #cdd6f4;
+      --paper: #faf7f0;
+      --ink: #1a1a1a;
+      --red: #c8361d;
+      --muted: #888;
+      --line: #ccc;
+    }
+
+    body[data-theme="dark"] {
+      --paper: #1c1b19;
+      --ink: #faf7f0;
+      --red: #e5533a;
+      --muted: #999;
+      --line: #444;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body[data-theme="auto"] {
+        --paper: #1c1b19;
+        --ink: #faf7f0;
+        --red: #e5533a;
+        --muted: #999;
+        --line: #444;
+      }
+    }
+
+
+    body {
+      width: 240px;
+      margin: 0;
+      padding: 14px 16px;
+      background: var(--paper);
+      color: var(--ink);
+      font: 13px/1.5 system-ui, sans-serif;
+      border-top: 3px solid var(--red);
     }
 
     h2 {
-      font-size: 15px;
-      margin-bottom: 12px;
-      color: #cba6f7;
-    }
-
-    label {
-      font-size: 12px;
-      color: #9399b2;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    input {
-      width: 100%;
-      padding: 7px 10px;
-      border-radius: 6px;
-      border: 1px solid #313244;
-      background: #181825;
-      color: #cdd6f4;
-      font-size: 13px;
-      box-sizing: border-box;
-      margin-bottom: 10px;
-    }
-
-    button {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-      background: #cba6f7;
-      color: #1e1e2e;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #b4befe;
-    }
-
-    #status {
-      font-size: 12px;
-      text-align: center;
-      margin-top: 8px;
-      color: #a6e3a1;
-      min-height: 16px;
+      margin: 0 0 12px;
+      font: 17px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 6px;
     }
 
     .toggle-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--line);
     }
 
-    .toggle-row label {
-        margin-bottom: 0;
+    label {
+      color: var(--ink);
     }
 
     input[type="checkbox"] {
-        width: auto;
-        margin-bottom: 0;
-        accent-color: #cba6f7;
+      accent-color: var(--red);
     }
+
+    select {
+      background: var(--paper);
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      padding: 2px 4px;
+      font: inherit;
+    }
+
+    #status {
+      min-height: 16px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+    }
+
   </style>
 </head>
 
