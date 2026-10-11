@@ -5,6 +5,8 @@ let currentTheme = "auto";
 document.addEventListener("mouseup", (e) => {
     if(buttonElement && buttonElement.contains(e.target))
         return;
+    if(popupElement && popupElement.contains(e.target))
+        return;
     const selected = window.getSelection().toString().trim();
     if(popupElement) {
         popupElement.remove();
@@ -116,12 +118,13 @@ function showError(msg, x, y) {
 function showResult(data, x, y) {
     const el = createPopup(x, y);
 
-    const words = data.words.map(w => `
+    const words = data.words.map((w, i) => `
         <div class="jp-word">
             <div class="jp-word-top">
                 <span class="jp-surface">${esc(w.word)}</span>
                 <span class="jp-reading">(${esc(w.reading)})</span>
                 <span class = "jp-pos">${esc(w.part_of_speech)}</span>
+                <button class="jp-star" data-i="${i}">☆</button>
             </div>
             <div class="jp-meaning">${esc(w.meaning)}</div>
             <div class="jp-role">${esc(w.role)}</div>
@@ -137,6 +140,10 @@ function showResult(data, x, y) {
         <div class="jp-divider"></div>
         <div class="jp-words">${words}</div>
     `;
+
+    el.querySelectorAll(".jp-star").forEach(btn => {
+        btn.addEventListener("click", () => saveWord(data.words[btn.dataset.i], btn));
+    });
 
     document.getElementById("jp-close-btn").addEventListener("click", () => {
         el.remove();
@@ -161,6 +168,19 @@ function analyze(text, x, y) {
             }
         }
     );
+}
+
+function saveWord(word, btn) {
+    chrome.storage.local.get(["vocab"], (data) => {
+        const vocab = data.vocab || [];
+        if(vocab.some(v => v.dictionary_form === word.dictionary_form)) {
+            btn.textContent = "★";
+            return;
+        }
+        vocab.push({word: word.word, reading: word.reading, dictionary_form: word.dictionary_form, meaning: word.meaning});
+        chrome.storage.local.set({vocab});
+        btn.textContent = "★";
+    });
 }
 
 function esc(s) {
