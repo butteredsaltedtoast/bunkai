@@ -26,7 +26,7 @@ async function analyze(text) {
         dictionary_form: tok.base_form,
         part_of_speech: tok.pos,
         meaning: tok.bases?.length > 1 ? tok.bases.map(b => `${b}: ${lookup(b, tok.pos, b)}`).join(" / ") : lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
-        role: ""
+        role: roleFor(tok)
     }));
     return {result: {original: text, overall_meaning: "", words}};
 }

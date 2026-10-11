@@ -11,7 +11,13 @@ function lookup(base, pos, reading, detail) {
             if(s)
                 return s.g[0];
         }
-        return e.s[0].g[0];
+        if(pos === "助詞" && detail === "接続助詞")
+        {
+            const s = e.s.find(s => s.p.includes("conj"));
+            if(s)
+                return s.g[0];
+        }
+        return e.s.slice(0, 3).map(s => s.g[0]).join("; ");
     };
     if(pos === "助詞")
     {
