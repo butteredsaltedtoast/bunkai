@@ -177,7 +177,7 @@ function saveWord(word, btn) {
             btn.textContent = "★";
             return;
         }
-        vocab.push({word: word.word, reading: word.reading, dictionary_form: word.dictionary_form, meaning: word.meaning});
+        vocab.push({word: word.word, reading: word.base_reading || word.reading, dictionary_form: word.dictionary_form, meaning: word.meaning});
         chrome.storage.local.set({vocab});
         btn.textContent = "★";
     });

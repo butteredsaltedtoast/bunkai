@@ -56,6 +56,55 @@
       border-bottom: 1px dashed var(--line);
     }
 
+    .vocab-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--line);
+      font-size: 12px;
+    }
+
+    .vocab-row button {
+      all: unset;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .vocab-row button:hover {
+      color: var(--red);
+    }
+
+    #vocab-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    #export {
+      width: 100%;
+      padding: 6px;
+      background: var(--paper);
+      color: var(--red);
+      border: 1px solid var(--red);
+      font: inherit;
+      cursor: pointer;
+    }
+    #export:hover {
+      background: var(--red);
+      color: var(--paper);
+    }
+
+    h2 + #vocab-list:empty::after {
+      content: "nothing saved yet";
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    h2:not(:first-of-type) {
+      margin-top: 16px;
+    }
+
     label {
       color: var(--ink);
     }
@@ -99,6 +148,10 @@
         <option value="dark">Dark</option>
       </select>
     </div>
+
+    <h2>Saved words</h2>
+    <div id="vocab-list"></div>
+    <button id="export">Export CSV</button>
 
     <div id="status"></div>
     <script src="settings.js"></script>

@@ -23,6 +23,7 @@ async function analyze(text) {
     const words = tokens.map(tok => ({
         word: tok.surface,
         reading: toHira(tok.reading),
+        base_reading: dict.get(tok.base_form)?.[0]?.r[0]?.t || "",
         dictionary_form: tok.base_form,
         part_of_speech: tok.pos,
         meaning: tok.bases?.length > 1 ? tok.bases.map(b => `${b}: ${lookup(b, tok.pos, b)}`).join(" / ") : lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
