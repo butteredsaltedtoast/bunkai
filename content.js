@@ -145,6 +145,15 @@ function showResult(data, x, y) {
         btn.addEventListener("click", () => saveWord(data.words[btn.dataset.i], btn));
     });
 
+    chrome.storage.local.get(["vocab"], (data2) => {
+        const saved = new Set((data2.vocab || []).map(v => v.dictionary_form))
+        el.querySelectorAll(".jp-star").forEach(btn => {
+            const word = data.words[btn.dataset.i];
+            if(saved.has(word.dictionary_form))
+                btn.textContent = "★";
+        });
+    });
+
     document.getElementById("jp-close-btn").addEventListener("click", () => {
         el.remove();
         popupElement = null;
