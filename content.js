@@ -133,6 +133,7 @@ function showResult(data, x, y) {
                     <span class="jp-reading">(${esc(w.reading)})</span>
                     <span class="jp-pos">${esc(w.part_of_speech)}</span>
                     <button class="jp-star" data-i="${i}">☆</button>
+                    <button class="jp-speak" data-i="${i}">🔊</button>
                 </div>
                 <div class="jp-meaning">${esc(w.meaning)}</div>
                 <div class="jp-role">${esc(w.role)}</div>
@@ -155,9 +156,18 @@ function showResult(data, x, y) {
         btn.addEventListener("click", () => saveWord(data.words[btn.dataset.i], btn));
     });
 
+    el.querySelectorAll(".jp-speak").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const u = new SpeechSynthesisUtterance(data.words[btn.dataset.i].word);
+            u.lang = "ja-JP";
+            speechSynthesis.cancel();
+            speechSynthesis.speak(u);
+        });
+    });
+
     el.querySelectorAll(".jp-word-top").forEach(row => {
         row.addEventListener("click", e => {
-            if(e.target.closest(".jp-star"))
+            if(e.target.closest(".jp-star, .jp-speak"))
                 return;
             row.parentElement.classList.toggle("open");
         })
