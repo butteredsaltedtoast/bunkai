@@ -7,12 +7,17 @@ for(const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js
 }
 
 const CHEAP = vm.runInContext("CHEAP", ctx);
+const KEEP_KANA = ["この", "その", "あの", "どの", "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ"];
 
 function kanjify(s) {
     const words = ctx.segment(s);
     let out = "";
     for(const w of words) {
         if(CHEAP.includes(w.surface)) {
+            out += w.surface;
+            continue;
+        }
+        if(KEEP_KANA.includes(w.surface)) {
             out += w.surface;
             continue;
         }
@@ -30,8 +35,20 @@ function kanjify(s) {
             out += kanji || w.surface
         }
         else if (w.bases[0] !== w.surface) {
+            if(w.bases.length > 1) {
+                out += w.surface;
+                continue;
+            }
+            if(w.bases.includes("する")) {
+                out += w.surface;
+                continue;
+            }
             const base = w.bases[0];
             const entries = ctx.findEntries(base, "動詞", base);
+            if(entries.length > 1) {
+                out += w.surface;
+                continue;
+            }
             const kanjiBase = entries[0]?.k[0]?.t;
             if(!kanjiBase || entries[0].s[0].m?.includes("uk")) {
                 out += w.surface;
