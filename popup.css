@@ -122,6 +122,7 @@
     display: flex;
     align-items: baseline;
     gap: 8px;
+    cursor: pointer;
 }
 
 .jp-surface {
@@ -171,4 +172,40 @@
     cursor: pointer;
     color: var(--red);
     font-size: 14px;
+}
+
+.jp-details {
+    display: none;
+    margin-top: 6px;
+}
+.jp-details ol {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    list-style: decimal;
+    color: var(--meaning);
+    font-size: 12px;
+}
+.jp-details li {
+    margin: 2px 0;
+}
+.jp-word.open .jp-details {
+    display: block;
+}
+
+.jp-entry {
+    margin-top: 6px;
+}
+.jp-entry + .jp-entry {
+    border-top: 1px dotted var(--divider);
+    padding-top: 6px;
+}
+
+.jp-spellings {
+    font: 14px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+    color: var(--ink);
+}
+
+.jp-sense-pos {
+    font-size: 10px;
+    color: var(--muted);
 }

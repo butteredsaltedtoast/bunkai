@@ -117,20 +117,30 @@ function showError(msg, x, y) {
 
 function showResult(data, x, y) {
     const el = createPopup(x, y);
-
-    const words = data.words.map((w, i) => `
-        <div class="jp-word">
-            <div class="jp-word-top">
-                <span class="jp-surface">${esc(w.word)}</span>
-                <span class="jp-reading">(${esc(w.reading)})</span>
-                <span class = "jp-pos">${esc(w.part_of_speech)}</span>
-                <button class="jp-star" data-i="${i}">☆</button>
-            </div>
-            <div class="jp-meaning">${esc(w.meaning)}</div>
-            <div class="jp-role">${esc(w.role)}</div>
-        </div>
-    `).join("");
     
+    const words = data.words.map((w, i) => {
+        const detailsHtml = (w.details || []).map(d => `
+            <div class="jp-entry">
+                <div class="jp-spellings">${esc(d.spellings.join("、"))}</div>
+                <ol>${d.senses.map(s => `<li><span class="jp-sense-pos">${esc(s.pos)}</span> ${esc(s.gloss)}</li>`).join("")}</ol>
+            </div>
+        `).join("");
+        
+        return `
+            <div class="jp-word">
+                <div class="jp-word-top">
+                    <span class="jp-surface">${esc(w.word)}</span>
+                    <span class="jp-reading">(${esc(w.reading)})</span>
+                    <span class="jp-pos">${esc(w.part_of_speech)}</span>
+                    <button class="jp-star" data-i="${i}">☆</button>
+                </div>
+                <div class="jp-meaning">${esc(w.meaning)}</div>
+                <div class="jp-role">${esc(w.role)}</div>
+                <div class="jp-details">${detailsHtml}</div>
+            </div>
+        `;
+    }).join("");
+
     el.innerHTML = `
         <div class="jp-header">
             <span class="jp-original">${esc(data.original)}</span>
@@ -143,6 +153,14 @@ function showResult(data, x, y) {
 
     el.querySelectorAll(".jp-star").forEach(btn => {
         btn.addEventListener("click", () => saveWord(data.words[btn.dataset.i], btn));
+    });
+
+    el.querySelectorAll(".jp-word-top").forEach(row => {
+        row.addEventListener("click", e => {
+            if(e.target.closest(".jp-star"))
+                return;
+            row.parentElement.classList.toggle("open");
+        })
     });
 
     chrome.storage.local.get(["vocab"], (data2) => {

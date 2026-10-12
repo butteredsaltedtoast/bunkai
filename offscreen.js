@@ -27,6 +27,10 @@ async function analyze(text) {
         dictionary_form: tok.base_form,
         part_of_speech: tok.pos,
         meaning: tok.bases?.length > 1 ? tok.bases.map(b => `${b}: ${lookup(b, tok.pos, b)}`).join(" / ") : lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
+        details: findEntries(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1).map(e => ({
+            spellings: [...e.k, ...e.r].map(s => s.t),
+            senses: e.s.map(s => ({pos: s.p.join(", "), gloss: s.g.join("; ")}))
+        })),
         role: roleFor(tok)
     }));
     return {result: {original: text, overall_meaning: "", words}};

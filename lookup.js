@@ -1,9 +1,4 @@
 function lookup(base, pos, reading, detail) {
-    let entries = dict.get(base);
-    if(!entries && base.endsWith("する"))
-        entries = dict.get(base.slice(0, -2));
-    if(!entries)
-        return "???";
     const senseFor = e => {
         if(pos === "助詞" && detail === "格助詞")
         {
@@ -19,6 +14,21 @@ function lookup(base, pos, reading, detail) {
         }
         return e.s.slice(0, 3).map(s => s.g[0]).join("; ");
     };
+    const top = findEntries(base, pos, reading, detail);
+    if(!top.length)
+        return "???";
+    if(top.length == 1)
+        return senseFor(top[0]);
+    return top.map(e => `${e.k[0]?.t || e.r[0].t}: ${senseFor(e)}`).join(" / ");
+}
+
+function findEntries(base, pos, reading, detail)
+{
+    let entries = dict.get(base);
+    if(!entries && base.endsWith("する"))
+        entries = dict.get(base.slice(0, -2));
+    if(!entries)
+        return [];
     if(pos === "助詞")
     {
         const prts = entries.filter(e => e.s.some(s => s.p.includes("prt")));
@@ -39,10 +49,7 @@ function lookup(base, pos, reading, detail) {
     entries = entries.filter(e => e.f <= entries[0].f + 10);
     if(entries[0].f < 99)
         entries = entries.filter(e => e.f < 99);
-    const top = entries.slice(0, 3);
-    if(top.length == 1)
-        return senseFor(top[0]);
-    return top.map(e => `${e.k[0]?.t || e.r[0].t}: ${senseFor(e)}`).join(" / ");
+    return entries.slice(0, 3);
 }
 
 function toHira(s) {
