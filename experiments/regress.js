@@ -82,6 +82,10 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     has("ga-but", ctx.lookup("が", "助詞", "ガ", "接続助詞"), "but");
     has("to-with", ctx.lookup("と", "助詞", "ト", "格助詞"), "with");
 
+    has("role-ga-but", ctx.roleFor({pos: "助詞", surface: "が", pos_detail_1: "接続助詞"}), "but");
+    has("role-ga-subj", ctx.roleFor({pos: "助詞", surface: "が", pos_detail_1: "格助詞"}), "subject");
+    check("role-noun", ctx.roleFor({pos: "名詞", surface: "猫"}), "");
+
     has("wa", ctx.lookup("は", "助詞", "ハ", "係助詞"), "topic");
     has("wo", ctx.lookup("を", "助詞", "ヲ", "格助詞"), "object");
     has("no", ctx.lookup("の", "助詞", "ノ", "連体化"), "possessive");

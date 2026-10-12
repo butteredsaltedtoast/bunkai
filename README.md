@@ -2,11 +2,17 @@
 
 Bunkai is a Chrome extension that breaks Japanese text down word by word. Highlight something, click the 分解 button, and you get each word's reading, part of speech, and meaning.
 
-You can press Esc to close the popup and Alt+B to analyze highlighted text if you'd rather not click the button.
-
 It runs entirely on your computer. No AI, no API key, no internet needed after install.
 
-Bunkai's look will default to your system theme. To change the theme, click on the extension icon and select your desired theme from the dropdown.
+## Features
+
+- Highlight Japanese, click 分解 (or press **Alt+B**), get a word-by-word breakdown
+- Click any word to expand every meaning, other spellings, and grammar info (godan verb, い-adjective, etc.)
+- Speaker icon reads a word out loud
+- Star icon saves a word to your vocab list (click the extension icon to see it) and **Export CSV** gives you a file Anki can import
+- Explains what particles do in the sentence
+- Light/Dark/Auto theme
+- Esc to close
 
 ## How it works
 
@@ -33,6 +39,7 @@ Bunkai's look will default to your system theme. To change the theme, click on t
 - `experiments/`: Node scratch scripts I used to build and test stuff, plus `build-dict.js`, which generates `data/jmdict.json`
 - If you want to rebuild the dictionary yourself, here's [jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases) and `JMdict_e.gz` from [EDRDG](http://ftp.edrdg.org/pub/Nihongo/). Unzip both into `experiments/data/` and run `node build-dict.js` from inside `experiments/`.
 - `experiments/regress.js`: regression tests, run `npm install` then `node regress.js` inside `experiments/` to check nothing broke.
+- `experiments/translate.mjs`: early test of offline sentence translation (works on kanji text, not hiragana yet)
 
 ## Credits
 

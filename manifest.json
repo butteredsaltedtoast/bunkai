@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bunkai",
-  "version": "2.0",
+  "version": "2.1",
   "description": "Highlight Japanese text for a word-by-word breakdown. Now runs fully offline, no API key needed!",
   "icons": {
     "16": "icon16.png",
