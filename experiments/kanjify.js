@@ -8,6 +8,7 @@ for(const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js
 
 const CHEAP = vm.runInContext("CHEAP", ctx);
 const KEEP_KANA = ["この", "その", "あの", "どの", "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ"];
+let GAP = 3;
 
 function kanjify(s) {
     const words = ctx.segment(s);
@@ -27,7 +28,7 @@ function kanjify(s) {
                 out += w.surface;
                 continue;
             }
-            if(entries[1] && entries[1].f === entries[0].f) {
+            if(entries[1] && entries[1].f - entries[0].f < GAP) {
                 out += w.surface;
                 continue;
             }
@@ -45,7 +46,7 @@ function kanjify(s) {
             }
             const base = w.bases[0];
             const entries = ctx.findEntries(base, "動詞", base);
-            if(entries.length > 1) {
+            if(entries.length > 1 && entries[1].f - entries[0].f < GAP) {
                 out += w.surface;
                 continue;
             }
