@@ -99,17 +99,18 @@ if(require.main === module) {
         ["みせでくだものをかいました", "店で果物を買いました"],
         ["よるはテレビをみます", "夜はテレビを見ます"],
     ]
-
-    let pass = 0, fail = 0;
-    for(const [input, want] of cases) {
-        const got = kanjify(input);
-        const ok = got === want;
-        ok ? pass++ : fail++;
-        console.log(`${ok ? "PASS" : "FAIL"} ${input}`);
-        if(!ok)
-            console.log(`       want: ${want}\n     got: ${got}`);
+    function score() {
+        let pass = 0;
+        for(const [input, want] of cases)
+            if(kanjify(input) === want)
+                pass++;
+        return pass;
     }
-    console.log(`\n${pass} passed, ${fail} failed`);
+
+    for(let g =  1; g <= 15; g++) {
+        GAP = g;
+        console.log(`gap ${g}: ${score()}/${cases.length}`);
+    }
 }
 
 module.exports = {kanjify};
