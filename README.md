@@ -40,6 +40,8 @@ It runs entirely on your computer. No AI, no API key, no internet needed after i
 - If you want to rebuild the dictionary yourself, here's [jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases) and `JMdict_e.gz` from [EDRDG](http://ftp.edrdg.org/pub/Nihongo/). Unzip both into `experiments/data/` and run `node build-dict.js` from inside `experiments/`.
 - `experiments/regress.js`: regression tests, run `npm install` then `node regress.js` inside `experiments/` to check nothing broke.
 - `experiments/translate.mjs`: early test of offline sentence translation (works on kanji text, not hiragana yet)
+- `experiments/kanjify.js`: converts hiragana to kanji using the segmenter + dictionary (8/20 on its tests so far)
+- `experiments/pipeline.mjs`: kanjify + an offline translation model. Cool finding: raw hiragana translates correctly 2/10 times, but using kanjify on a hiragana sentence translates correctly 7/10 times.
 
 ## Credits
 
