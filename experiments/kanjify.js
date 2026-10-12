@@ -76,6 +76,31 @@ function commonSuffix(a, b) {
     return n;
 }
 
+function options(s) {
+    return ctx.segment(s).map(w => {
+        if(CHEAP.includes(w.surface) || KEEP_KANA.includes(w.surface))
+            return [w.surface];
+        if(w.bases[0] !== w.surface) {
+            const outs = [w.surface];
+            for(const base of w.bases) {
+                for(const e of ctx.findEntries(base, "動詞", base)) {
+                    const kb = e.k[0]?.t;
+                    if(!kb)
+                        continue;
+                    const n = commonSuffix(kb, base);
+                    const ks = base.slice(0, base.length - n);
+                    if(w.surface.startsWith(ks))
+                        outs.push(kb.slice(0, kb.length - n) + w.surface.slice(ks.length));
+                }
+            }
+            return [...new Set(outs)];
+        }
+        const entries = ctx.dict.has(w.surface) ? ctx.findEntries(w.surface, "", w.surface) : [];
+        const kanji = entries.map(e => e.k[0]?.t).filter(Boolean);
+        return [w.surface, ...new Set(kanji)];
+    });
+}
+
 if(require.main === module) {
     const cases = [
         ["わたしはにほんごをべんきょうしています", "私は日本語を勉強しています"],
@@ -107,10 +132,14 @@ if(require.main === module) {
         return pass;
     }
 
-    for(let g =  1; g <= 15; g++) {
-        GAP = g;
-        console.log(`gap ${g}: ${score()}/${cases.length}`);
-    }
+    //for(let g =  1; g <= 15; g++) {
+        //GAP = g;
+        //console.log(`gap ${g}: ${score()}/${cases.length}`);
+
+        // we're js keeping gap 3 pal
+    //}
+
+    console.log(options("きょうはあさからあめがふっています"));
 }
 
-module.exports = {kanjify};
+module.exports = {kanjify, options};
