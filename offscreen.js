@@ -29,7 +29,9 @@ async function analyze(text) {
         meaning: tok.bases?.length > 1 ? tok.bases.map(b => `${b}: ${lookup(b, tok.pos, b)}`).join(" / ") : lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
         details: findEntries(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1).map(e => ({
             spellings: [...e.k, ...e.r].map(s => s.t),
-            senses: e.s.map(s => ({pos: s.p.join(", "), gloss: s.g.join("; ")}))
+            senses: e.s.map((s, i) => ({
+                pos: i > 0 && s.p.join() === e.s[i - 1].p.join() ? "" : s.p.map(c => POS_NAMES[c] || c).join(", "), 
+                gloss: s.g.join("; ")}))
         })),
         role: roleFor(tok)
     }));

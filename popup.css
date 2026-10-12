@@ -187,6 +187,8 @@
 }
 .jp-details li {
     margin: 2px 0;
+    list-style: decimal;
+    display: list-item;
 }
 .jp-word.open .jp-details {
     display: block;
