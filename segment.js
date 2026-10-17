@@ -57,5 +57,8 @@ function segment(s) {
 function cost(w) {
     if(CHEAP.includes(w))
         return 0.2;
+    const entries = dict.get(w);
+    if(entries.every(e => e.s[0].p.includes("exp")))
+        return 5;
     return 0.5 + (Math.min(...dict.get(w).map(e => e.f))) / 20;
 }

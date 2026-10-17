@@ -106,7 +106,7 @@ if(require.main === module) {
         ["わたしはにほんごをべんきょうしています", "私は日本語を勉強しています"],
         ["わたしはねこがすきです", "私は猫が好きです"],
         ["わたしのかさはどこですか", "私の傘はどこですか"],
-        ["まいにちあさごはんをたべます", "毎日朝ご飯を食べます"],
+        ["まいにちあさごはんをたべます", "毎日朝ごはんを食べます"],
         ["このしろいぼうしがほしいです", "この白い帽子が欲しいです"],
         ["いぬがすきです", "犬が好きです"],
         ["ともだちとえいがをみます", "友達と映画を見ます"],
@@ -132,14 +132,8 @@ if(require.main === module) {
         return pass;
     }
 
-    //for(let g =  1; g <= 15; g++) {
-        //GAP = g;
-        //console.log(`gap ${g}: ${score()}/${cases.length}`);
-
-        // we're js keeping gap 3 pal
-    //}
-
-    console.log(options("きょうはあさからあめがふっています"));
+    GAP = 3;
+    console.log(`${score()}/${cases.length}`);
 }
 
 module.exports = {kanjify, options};

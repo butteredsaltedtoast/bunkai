@@ -18,7 +18,8 @@ function deinflect(word) {
         if(!word.endsWith(ending))
             continue;
         const stem = word.slice(0, -ending.length);
-        results.push(stem + "る");
+        if(!ending.startsWith("で") && !ending.startsWith("だ"))
+            results.push(stem + "る");
         
         const last = stem.slice(-1);
         const rest = stem.slice(0, -1);

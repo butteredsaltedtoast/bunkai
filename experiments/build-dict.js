@@ -15,7 +15,7 @@ for(const chunk of xml.split("<entry")) {
     if(nf)
         score = Number(nf.slice(2));
     else if (tags.some(t => ["news1", "ichi1", "spec1"].includes(t)))
-        score = 49;
+        score = 20;
     else if (tags.some(t => ["news2", "ichi2", "spec2", "gai1"].includes(t)))
         score = 60;
     if(tags.includes("ichi1"))
