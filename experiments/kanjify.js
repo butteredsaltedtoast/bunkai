@@ -81,10 +81,19 @@ function options(s) {
     return ctx.segment(s).map(w => {
         if(CHEAP.includes(w.surface) || KEEP_KANA.includes(w.surface))
             return [w.surface];
-        // the stuff for verbs
+        // the stuff needed for verbs
         if(w.bases[0] !== w.surface) {
             const outs = [w.surface];
             for(const base of w.bases) {
+                if(base.endsWith("する")) {
+                    const noun = base.slice(0, -2);
+                    for(const e of common(ctx.dict.get(noun) || [])) {
+                        const kn = e.k[0]?.t;
+                        if(kn && w.surface.startsWith(noun))
+                            outs.push(kn + w.surface.slice(noun.length));
+                    }
+                    continue;
+                }
                 for(const e of common(ctx.dict.get(base) || [])) {
                     if(e.s[0].m?.includes("uk"))
                         continue;
@@ -99,7 +108,7 @@ function options(s) {
             }
             return outs.length > 1 ? [...new Set(outs.slice(1))] : outs;
         }
-        // the stuff for nouns
+        // the stuff needed for nouns
         const entries = common(ctx.dict.get(w.surface) || []);
         const kanji = entries.filter(e => !e.s[0].m?.includes("uk")).map(e => e.k[0]?.t).filter(Boolean);
         return kanji.length ? [...new Set(kanji)] : [w.surface];
@@ -127,6 +136,7 @@ const cases = [
     ["へやがひろいです", "部屋が広いです"],
     ["みせでくだものをかいました", "店で果物を買いました"],
     ["よるはテレビをみます", "夜はテレビを見ます"],
+    // current progress at 16/20!! compared to like 8 or 9/20 with the rules handwritten
 ]
 
 if(require.main === module) {
