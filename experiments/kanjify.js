@@ -139,6 +139,23 @@ const cases = [
     ["よるはテレビをみます", "夜はテレビを見ます"],
 ];
 
+/*
+    the reason we need these "fresh" arrays is for the following reason!!
+    basically. every time i run a test and something goes wrong and i go fix it.
+    i have now kind of "tuned" it to work for that specific case, and the score goes up by 1.
+    HOWEVER
+    this isn't really honest to how accurate the extension is!
+    what if it only works on the test sentences? or what if there's an entirely different problem not covered by the test?
+    that's why i wrote these fresh tests with sentences that AREN'T in tatoeba.
+    (because the n-gram model learned from tatoeba. it's gonna get it right if it's in tatoeba.)
+
+    TLDR;
+    every time i fix bugs from a set, it gets kind of 'used up.'
+    they're to test on never-before seen sentences to avoid inflated scores
+    and that's why there's multiple!
+    i need to write another every time i fix problems from one.
+*/
+
 const fresh = [
     ["あにはぎんこうではたらいています", "兄は銀行で働いています"],
     ["きのうはともだちのいえにとまりました", "昨日は友達の家に泊まりました"],
@@ -157,6 +174,21 @@ const fresh = [
     ["おとうとといっしょにうみでおよぎました", "弟と一緒に海で泳ぎました"],
 ];
 
+const fresh2 = [ // i decided i'm adding meaning comments to these, starting now.
+    ["まいばんおふろにはいります", "毎晩お風呂に入ります"], // i take a bath every night
+    ["そらがとてもあおいです", "空がとても青いです"], // the sky is very blue
+    ["ははがおいしいケーキをつくりました", "母がおいしいケーキを作りました"], // my mom made a tasty cake
+    ["としょかんでほんをかりました", "図書館で本を借りました"], // i borrowed a book at the library
+    ["ちかてつはとてもべんりです", "地下鉄はとても便利です"], // the subway is very convenient
+    ["ねこがいすのしたでねています", "猫が椅子の下で寝ています"], // the cat is sleeping under the chair
+    ["かぜをひいてがっこうをやすみました", "風邪を引いて学校を休みました"], // i caught a cold and missed school
+    ["あたらしいくつをはきたいです", "新しい靴を履きたいです"], // i want to wear new shoes
+    ["きょうはさむいのでコートをきます", "今日は寒いのでコートを着ます"], // it's cold today so i'll wear a coat
+    ["おとうとはまいにちゲームをしています", "弟は毎日ゲームをしています"], // my little brother plays games every day
+    ["えきまであるいていきました", "駅まで歩いて行きました"], // i walked to the station
+    ["このりょうりはちょっとからいです", "この料理はちょっと辛いです"], // this food is a little spicy
+];
+
 if(require.main === module) {
     function score() {
         let pass = 0;
@@ -168,6 +200,10 @@ if(require.main === module) {
 
     GAP = 3;
     console.log(`${score()}/${cases.length}`);
+
+    console.log(ctx.segment("ねこがいすのしたでねています").map(w => w.surface));
+    console.log(ctx.segment("かぜをひいてがっこうをやすみました").map(w => w.surface));
+    console.log(JSON.stringify(options("かぜをひいてがっこうをやすみました")));
 }
 
-module.exports = {kanjify, options, cases, fresh};
+module.exports = {kanjify, options, cases, fresh, fresh2};

@@ -1,7 +1,7 @@
 import {createRequire} from "module";
 import {score} from "./ngram.mjs";
 const require = createRequire(import.meta.url);
-const {options, cases, fresh} = require("./kanjify.js");
+const {options, cases, fresh, fresh2} = require("./kanjify.js");
 
 export async function beam(s, width = 3) {
     let beams = [{text: "", score: 0}];
@@ -22,23 +22,29 @@ export async function beam(s, width = 3) {
     return beams[0].text;
 }
 
-if(import.meta.url === `file://${process.argv[1]}`) {
+let totalcorrect = 0, total = 0;
+async function run(name, set) {
     let pass = 0;
-    console.log("~~~OLD:~~~");
-    for(const [input, want] of cases) {
+    console.log(`---tests of set ${name}---`);
+    for(const [input, want] of set) {
         const got = await beam(input);
         const ok = got === want;
-        if(ok)
+        if(ok) {
             pass++;
-        console.log(`${ok ? "PASS" : "FAIL"} ${got}${ok ? "" : "    (want " + want + ")"}`);
+            totalcorrect++;
+        }
+
+        console.log(`${ok ? "PASS" : "FAIL"} ${got}${ok ? "" : "   (want " + want + ")"}`);
+        total++;
     }
-    console.log("~~~NEW:~~~");
-    for(const [input, want] of fresh) {
-        const got = await beam(input);
-        const ok = got === want;
-        if(ok)
-            pass++;
-        console.log(`${ok ? "PASS" : "FAIL"} ${got}${ok ? "" : "    (want " + want + ")"}`);
-    }
-    console.log(`\nbeam: ${pass}/${cases.length + fresh.length}`);
+    console.log(`${name}: ${pass}/${set.length}\n`);
+}
+
+if(import.meta.url === `file://${process.argv[1]}`) {
+    totalcorrect = 0;
+    total = 0;
+    await run("old", cases);
+    await run("fresh", fresh);
+    await run("fresh2", fresh2);
+    console.log(`total: ${totalcorrect}/${total}\n`);
 }

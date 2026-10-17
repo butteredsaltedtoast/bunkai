@@ -10,19 +10,22 @@ function segment(s) {
             let c, bases = [w];
             if(CHEAP.includes(w))
                 c = 0.2;
-            else if(dict.has(w))
-                c = cost(w);
-            else {
+            else { // a word can be both dictionary entry AND!!! conjugated form, so try both!
+                const dictC = dict.has(w) ? cost(w) : Infinity;
                 const cands = deinflect(w);
-                if(cands.length) {
-                    const bestCost = Math.min(...cands.map(cost));
-                    bases = cands.filter(b => cost(b) <= bestCost + 0.5).sort((a, b) => cost(a) - cost(b));
-                    c = bestCost;
+                const defC = cands.length ? Math.min(...cands.map(cost)) : Infinity;
+                if(dictC === Infinity && defC === Infinity) {
+                    if(w.length === 1)
+                        c = 8;
+                    else
+                        continue;
+                } 
+                else if(defC < dictC) {
+                    bases = cands.filter(b => cost(b) <= defC + 0.5).sort((a, b) => cost(a) - cost(b));
+                    c = defC;
                 }
-                else if(w.length === 1)
-                    c = 8;
                 else
-                    continue;
+                    c = dictC;
             }
             const prevWord = j > 0 ? s.slice(from[j], j) : null;
             if(prevWord === w && CHEAP.includes(w))
@@ -60,9 +63,15 @@ function segment(s) {
 function cost(w) {
     if(CHEAP.includes(w))
         return 0.2;
+    if(w.includes("を"))
+        return 5;
     const entries = dict.get(w);
     if(entries.every(e => e.s[0].p.includes("exp")))
         return 5;
-    const base = 0.5 + Math.min(...entries.map(e => e.f)) / 20;
-    return w.length === 1 ? base + 1 : base;
+    let c = 0.5 + Math.min(...entries.map(e => e.f)) / 20;
+    if(w.length === 1)
+        c += 1;
+    if(/^[\u3041-\u309f]+$/.test(w) && !entries.some(e => e.r.some(r => r.t === w && r.c))) // basically rare reading of common words DO NOT inherit frequency
+        c += 1.5;
+    return c;
 }

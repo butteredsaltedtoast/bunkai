@@ -49,7 +49,9 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     check("inu-h", kana("いぬがすきです"), ["いぬ", "が", "すき", "です"]);
     check("tabemono-h", kana("たべものがおいしくない"), ["たべもの", "が", "おいしくない"]);
     check("haha-h", kana("ははとはなします"), ["はは", "と", "はなします"]);
-
+    check("shitade-h", kana("ねこがいすのしたでねています"), ["ねこ", "が", "いす", "の", "した", "で", "ねています"]);
+    check("hiite-h", kana("かぜをひいてがっこうをやすみました"), ["かぜ", "を", "ひいて", "がっこう", "を", "やすみました"]);
+    
     check("yesterday-k", kanji("昨日食べられなかった"), ["昨日", "食べられなかった"]);
     check("study-k", kanji("勉強しなければならない"), ["勉強しなければならない"]);
     check("expensive-k", kanji("高くなかった"), ["高くなかった"]);
