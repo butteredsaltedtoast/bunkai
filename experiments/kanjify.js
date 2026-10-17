@@ -76,6 +76,7 @@ function commonSuffix(a, b) {
     return n;
 }
 
+const isVerbish = e => e.s.some(s => s.p.some(p => p.startsWith("v") || p.startsWith("adj-i")));
 const common = list => list.filter(e => e.f < 99).sort((a, b) => a.f - b.f).slice(0, 4);
 function options(s) {
     return ctx.segment(s).map(w => {
@@ -94,7 +95,7 @@ function options(s) {
                     }
                     continue;
                 }
-                for(const e of common(ctx.dict.get(base) || [])) {
+                for(const e of common((ctx.dict.get(base) || []).filter(isVerbish))) {
                     if(e.s[0].m?.includes("uk"))
                         continue;
                     const kb = e.k[0]?.t;
@@ -136,8 +137,25 @@ const cases = [
     ["へやがひろいです", "部屋が広いです"],
     ["みせでくだものをかいました", "店で果物を買いました"],
     ["よるはテレビをみます", "夜はテレビを見ます"],
-    // current progress at 16/20!! compared to like 8 or 9/20 with the rules handwritten
-]
+];
+
+const fresh = [
+    ["あにはぎんこうではたらいています", "兄は銀行で働いています"],
+    ["きのうはともだちのいえにとまりました", "昨日は友達の家に泊まりました"],
+    ["きょねんのふゆはとてもさむかった", "去年の冬はとても寒かった"],
+    ["えきのまえでいもうとをまちました", "駅の前で妹を待ちました"],
+    ["あたらしいくるまをかいたいです", "新しい車を買いたいです"],
+    ["せんせいにてがみをかきました", "先生に手紙を書きました"],
+    ["たなのうえにはこがあります", "棚の上に箱があります"],
+    ["こどもたちがこうえんであそんでいます", "子供たちが公園で遊んでいます"],
+    ["ドアをしめてもいいですか", "ドアを閉めてもいいですか"],
+    ["あねはびょういんではたらいています", "姉は病院で働いています"],
+    ["あめがやんだらそとであそびましょう", "雨が止んだら外で遊びましょう"],
+    ["ちちはまいあささんぽをします", "父は毎朝散歩をします"],
+    ["このみせのラーメンはやすくておいしい", "この店のラーメンは安くておいしい"],
+    ["らいしゅうしけんがあります", "来週試験があります"],
+    ["おとうとといっしょにうみでおよぎました", "弟と一緒に海で泳ぎました"],
+];
 
 if(require.main === module) {
     function score() {
@@ -152,4 +170,4 @@ if(require.main === module) {
     console.log(`${score()}/${cases.length}`);
 }
 
-module.exports = {kanjify, options, cases};
+module.exports = {kanjify, options, cases, fresh};

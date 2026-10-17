@@ -48,6 +48,7 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     check("omoshiroi-h", kana("このほんはおもしろかった"), ["この", "ほん", "は", "おもしろかった"]);
     check("inu-h", kana("いぬがすきです"), ["いぬ", "が", "すき", "です"]);
     check("tabemono-h", kana("たべものがおいしくない"), ["たべもの", "が", "おいしくない"]);
+    check("haha-h", kana("ははとはなします"), ["はは", "と", "はなします"]);
 
     check("yesterday-k", kanji("昨日食べられなかった"), ["昨日", "食べられなかった"]);
     check("study-k", kanji("勉強しなければならない"), ["勉強しなければならない"]);

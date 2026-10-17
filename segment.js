@@ -24,6 +24,9 @@ function segment(s) {
                 else
                     continue;
             }
+            const prevWord = j > 0 ? s.slice(from[j], j) : null;
+            if(prevWord === w && CHEAP.includes(w))
+                c += 5;
             if(best[j] + c < best[k]) {
                 best[k] = best[j] + c;
                 from[k] = j;
@@ -60,5 +63,6 @@ function cost(w) {
     const entries = dict.get(w);
     if(entries.every(e => e.s[0].p.includes("exp")))
         return 5;
-    return 0.5 + (Math.min(...dict.get(w).map(e => e.f))) / 20;
+    const base = 0.5 + Math.min(...entries.map(e => e.f)) / 20;
+    return w.length === 1 ? base + 1 : base;
 }
