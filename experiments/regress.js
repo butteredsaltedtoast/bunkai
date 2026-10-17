@@ -63,6 +63,7 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     check("furu-d", ctx.deinflect("ふっています"), ["ふる"]);
     check("taberu-d", ctx.deinflect("たべました"), ["たべる"]);
     check("tanoshii-d", ctx.deinflect("たのしかった"), ["たのしい"]);
+    check("no-shiru-d", ctx.deinflect("します").includes("しる"), false);
 
     has("nomu-d", ctx.deinflect("のみます"), "のむ");
     has("oishii-d", ctx.deinflect("おいしくない"), "おいしい");

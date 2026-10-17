@@ -13,26 +13,27 @@ const ADJ_ENDINGS = ["かった", "くない", "くなかった", "くて", "け
 
 function deinflect(word) {
     const results = [];
-    // for each [ending, type] in endings
     for(const [ending, type] of ENDINGS) {
         if(!word.endsWith(ending))
             continue;
         const stem = word.slice(0, -ending.length);
         if(!ending.startsWith("で") && !ending.startsWith("だ"))
-            results.push(stem + "る");
-        
+            results.push({c: stem + "る", kind: "v1"});
         const last = stem.slice(-1);
         const rest = stem.slice(0, -1);
-        for(const [dictEnding, stems] of Object.entries(GODAN))
-            if(stems[type] === last)
-                results.push(rest + dictEnding);
+        for(const [dictEnding, stems] of Object.entries(GODAN)) {
+            if(stems[type] !== last)
+                continue;
+            const kind = dictEnding === "する" ? "vs" : dictEnding === "くる" ? "vk" : "v5";
+            results.push({c: rest + dictEnding, kind});
+        }
     }
-    for(const ending of ADJ_ENDINGS)
-    {
+    for(const ending of ADJ_ENDINGS) {
         if(!word.endsWith(ending))
             continue;
-        results.push(word.slice(0, -ending.length) + "い");
+        results.push({c: word.slice(0, -ending.length) + "い", kind: "adj"});
     }
 
-    return [...new Set(results)].filter(c => dict.get(c)?.some(e => e.s.some(s => s.p.some(p => p.startsWith("v") || p === "adj-i"))));
+    const matches = (c, kind) => dict.get(c)?.some(e => e.s.some(s => s.p.some(p =>kind === "adj" ? p.startsWith("adj-i") : p.startsWith(kind))));
+    return [...new Set(results.filter(r => matches(r.c, r.kind)).map(r => r.c))];
 }

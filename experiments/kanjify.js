@@ -7,7 +7,7 @@ for(const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js
 }
 
 const CHEAP = vm.runInContext("CHEAP", ctx);
-const KEEP_KANA = ["この", "その", "あの", "どの", "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ"];
+const KEEP_KANA = ["か", "この", "その", "あの", "どの", "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ"];
 let GAP = 3;
 
 function kanjify(s) {
@@ -76,14 +76,18 @@ function commonSuffix(a, b) {
     return n;
 }
 
+const common = list => list.filter(e => e.f < 99).sort((a, b) => a.f - b.f).slice(0, 4);
 function options(s) {
     return ctx.segment(s).map(w => {
         if(CHEAP.includes(w.surface) || KEEP_KANA.includes(w.surface))
             return [w.surface];
+        // the stuff for verbs
         if(w.bases[0] !== w.surface) {
             const outs = [w.surface];
             for(const base of w.bases) {
-                for(const e of ctx.findEntries(base, "動詞", base)) {
+                for(const e of common(ctx.dict.get(base) || [])) {
+                    if(e.s[0].m?.includes("uk"))
+                        continue;
                     const kb = e.k[0]?.t;
                     if(!kb)
                         continue;
@@ -93,37 +97,39 @@ function options(s) {
                         outs.push(kb.slice(0, kb.length - n) + w.surface.slice(ks.length));
                 }
             }
-            return [...new Set(outs)];
+            return outs.length > 1 ? [...new Set(outs.slice(1))] : outs;
         }
-        const entries = ctx.dict.has(w.surface) ? ctx.findEntries(w.surface, "", w.surface) : [];
-        const kanji = entries.map(e => e.k[0]?.t).filter(Boolean);
-        return [w.surface, ...new Set(kanji)];
+        // the stuff for nouns
+        const entries = common(ctx.dict.get(w.surface) || []);
+        const kanji = entries.filter(e => !e.s[0].m?.includes("uk")).map(e => e.k[0]?.t).filter(Boolean);
+        return kanji.length ? [...new Set(kanji)] : [w.surface];
     });
 }
 
+const cases = [
+    ["わたしはにほんごをべんきょうしています", "私は日本語を勉強しています"],
+    ["わたしはねこがすきです", "私は猫が好きです"],
+    ["わたしのかさはどこですか", "私の傘はどこですか"],
+    ["まいにちあさごはんをたべます", "毎日朝ごはんを食べます"],
+    ["このしろいぼうしがほしいです", "この白い帽子が欲しいです"],
+    ["いぬがすきです", "犬が好きです"],
+    ["ともだちとえいがをみます", "友達と映画を見ます"],
+    ["あのくつがほしいです", "あの靴が欲しいです"],
+    ["ははとはなします", "母と話します"],
+    ["ちちとやきゅうをします", "父と野球をします"],
+    ["きょうはあさからあめがふっています", "今日は朝から雨が降っています"],
+    ["ともだちとこうえんへいきました", "友達と公園へ行きました"],
+    ["まいにちみずをのみます", "毎日水を飲みます"],
+    ["このほんはおもしろかった", "この本は面白かった"],
+    ["がっこうでせんせいとはなしました", "学校で先生と話しました"],
+    ["でんしゃでかいしゃにいきます", "電車で会社に行きます"],
+    ["あしたはやすみです", "明日は休みです"],
+    ["へやがひろいです", "部屋が広いです"],
+    ["みせでくだものをかいました", "店で果物を買いました"],
+    ["よるはテレビをみます", "夜はテレビを見ます"],
+]
+
 if(require.main === module) {
-    const cases = [
-        ["わたしはにほんごをべんきょうしています", "私は日本語を勉強しています"],
-        ["わたしはねこがすきです", "私は猫が好きです"],
-        ["わたしのかさはどこですか", "私の傘はどこですか"],
-        ["まいにちあさごはんをたべます", "毎日朝ごはんを食べます"],
-        ["このしろいぼうしがほしいです", "この白い帽子が欲しいです"],
-        ["いぬがすきです", "犬が好きです"],
-        ["ともだちとえいがをみます", "友達と映画を見ます"],
-        ["あのくつがほしいです", "あの靴が欲しいです"],
-        ["ははとはなします", "母と話します"],
-        ["ちちとやきゅうをします", "父と野球をします"],
-        ["きょうはあさからあめがふっています", "今日は朝から雨が降っています"],
-        ["ともだちとこうえんへいきました", "友達と公園へ行きました"],
-        ["まいにちみずをのみます", "毎日水を飲みます"],
-        ["このほんはおもしろかった", "この本は面白かった"],
-        ["がっこうでせんせいとはなしました", "学校で先生と話しました"],
-        ["でんしゃでかいしゃにいきます", "電車で会社に行きます"],
-        ["あしたはやすみです", "明日は休みです"],
-        ["へやがひろいです", "部屋が広いです"],
-        ["みせでくだものをかいました", "店で果物を買いました"],
-        ["よるはテレビをみます", "夜はテレビを見ます"],
-    ]
     function score() {
         let pass = 0;
         for(const [input, want] of cases)
@@ -136,4 +142,4 @@ if(require.main === module) {
     console.log(`${score()}/${cases.length}`);
 }
 
-module.exports = {kanjify, options};
+module.exports = {kanjify, options, cases};
