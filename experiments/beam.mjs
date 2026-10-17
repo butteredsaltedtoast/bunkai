@@ -1,5 +1,5 @@
 import {createRequire} from "module";
-import {score} from "./lm.mjs";
+import {score} from "./ngram.mjs";
 const require = createRequire(import.meta.url);
 const {options, cases} = require("./kanjify.js");
 
