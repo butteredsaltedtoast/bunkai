@@ -4,9 +4,8 @@ const kuromoji = require("kuromoji");
 
 const ctx = {dict: require("./dict"), console};
 vm.createContext(ctx);
-for(const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js"]) {
+for (const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js", "posnames.js", "ngram.js", "kanjify.js", "analyze.js"])
     vm.runInContext(fs.readFileSync("../" + f, "utf8"), ctx);
-}
 
 let pass = 0, fail = 0;
 function check(name, got, want) {
@@ -28,6 +27,7 @@ function has(name, got, sub) {
 kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     if(err)
         throw err;
+    ctx.setNgram(JSON.parse(fs.readFileSync("../data/ngram.json", "utf8")));
     const kana = s => ctx.segment(s).map(w => w.surface);
     const kanji = s => ctx.merge(t.tokenize(s)).map(c => c.surface);
 
@@ -105,6 +105,25 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     has("ikiru", ctx.lookup("いきる", "動詞", "いきる"), "live");
 
     has("miru", ctx.lookup("みる", "動詞", "みる"), "see");
+
+    check("beam-rain", ctx.beam(t, "きょうはあさからあめがふっています").text, "今日は朝から雨が降っています");
+    check("beam-cats", ctx.beam(t, "わたしはねこがすきです").text, "私は猫が好きです");
+    check("beam-park", ctx.beam(t, "ともだちとこうえんへいきました").text, "友達と公園へ行きました");
+    check("beam-mom", ctx.beam(t, "ははとはなします").text, "母と話します");
+    check("beam-dad", ctx.beam(t, "ちちとやきゅうをします").text, "父と野球をします");
+    check("beam-study", ctx.beam(t, "わたしはにほんごをべんきょうしています").text, "私は日本語を勉強しています");
+
+    has("options-asa", JSON.stringify(ctx.options("あさ")), "朝");
+    check("options-particle", ctx.options("は")[0].map(c => c.text), ["は"]);
+
+    const rain = ctx.analyzeWith(t, "きょうはあさからあめがふっています");
+    has("analyze-kanji", rain.kanji, "今日は朝から雨が降っています");
+    has("analyze-asa-morning", rain.words[2].meaning, "morning");
+    check("analyze-no-cannabis", rain.words[2].meaning.includes("cannabis"), false);
+    has("analyze-furu-fall", rain.words[6].meaning, "fall");
+    check("analyze-dict-form", rain.words[2].dictionary_form, "朝");
+    check("analyze-no-kanji-view", ctx.analyzeWith(t, "犬が好きです").kanji, "");
+    has("analyze-role", ctx.analyzeWith(t, "いぬがすきです").words[1].role, "subject");
 
     console.log(`\n${pass} passed, ${fail} failed`);
 })
