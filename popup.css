@@ -221,6 +221,11 @@
     font: 15px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
     color: var(--muted);
     margin: -4px 0 8px;
+    line-height: 2.2;
+}
+.jp-kanji rt {
+    font: 9px system-ui, sans-serif;
+    color: var(--muted);
 }
 .jp-kanji::before {
     content: "in kanji: ";

@@ -25,3 +25,16 @@ chrome.commands.onCommand.addListener((command, tab) => {
     if(command === "analyze-selection")
         chrome.tabs.sendMessage(tab.id, {type: "SHORTCUT"});
 });
+
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.contextMenus.create({
+        id: "bunkai",
+        title: "break down with bunkai (分解)",
+        contexts: ["selection"]
+    });
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => { // for right click option to work!
+    if(info.menuItemId === "bunkai")
+        chrome.tabs.sendMessage(tab.id, {type: "SHORTCUT"});
+});

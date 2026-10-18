@@ -133,7 +133,7 @@ function showResult(data, x, y) {
             <div class="jp-word">
                 <div class="jp-word-top">
                     <span class="jp-surface">${esc(w.word)}</span>
-                    <span class="jp-reading">(${esc(w.reading)})</span>
+                    <span class="jp-reading">(${w.reading ? `(${esc(w.reading)})` : ""})</span>
                     <span class="jp-pos">${esc(w.part_of_speech)}</span>
                     <button class="jp-star" data-i="${i}">☆</button>
                     <button class="jp-speak" data-i="${i}">🔊</button>
@@ -150,7 +150,7 @@ function showResult(data, x, y) {
             <span class="jp-original">${esc(data.original)}</span>
             <button class="jp-close" id="jp-close-btn">✕</button>
         </div>
-        <div class="jp-kanji">${esc(data.kanji)}</div>
+        <div class="jp-kanji">${(data.kanjiParts || []).map(p => p.ruby ? `<ruby>${esc(p.base)}<rt>${esc(p.ruby)}</rt></ruby>` : esc(p.base)).join("")}</div>
         <div class="jp-translation">${esc(data.overall_meaning)}</div>
         <div class="jp-divider"></div>
         <div class="jp-words">${words}</div>

@@ -125,5 +125,9 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     check("analyze-no-kanji-view", ctx.analyzeWith(t, "犬が好きです").kanji, "");
     has("analyze-role", ctx.analyzeWith(t, "いぬがすきです").words[1].role, "subject");
 
+    has("furigana-kyou", JSON.stringify(rain.kanjiParts), '"base":"今日","ruby":"きょう"');
+    has("furigana-furu", JSON.stringify(rain.kanjiParts), '"base":"降","ruby":"ふ"');
+    check("furigana-kanji-string", rain.kanji, "今日は朝から雨が降っています");
+
     console.log(`\n${pass} passed, ${fail} failed`);
 })

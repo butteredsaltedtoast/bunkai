@@ -29,11 +29,13 @@ function analyzeWith(t, text) {
         base_reading: tok.kanjiBase ? tok.base_form: (dict.get(tok.base_form)?.[0]?.r[0]?.t || ""),
         dictionary_form: tok.kanjiBase || tok.base_form,
         part_of_speech: tok.pos,
-        meaning: tok.kanjiBase ?
-            lookup(tok.kanjiBase, tok.pos, tok.stemReading, tok.pos_detail_1) :
-            tok.bases?.length > 1 ?
-                tok.bases.map(b => `${b}: ${lookup(b, tok.pos, b)}`).join(" / ") :
-                lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
+        meaning: tok.pos_detail_1 === "数" || /^[0-9０-９,.]+$/.test(tok.surface)
+            ? "number"
+            : tok.kanjiBase
+                ? lookup(tok.kanjiBase, tok.pos, tok.stemReading, tok.pos_detail_1)
+                : tok.bases?.length > 1
+                    ? tok.bases.map(b => `${b}: ${lookup(b, tok.pos, b)}`).join(" / ")
+                    : lookup(tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1),
         details: findEntries(tok.kanjiBase || tok.base_form, tok.pos, tok.stemReading, tok.pos_detail_1).map(e => ({
             spellings: [...e.k, ...e.r].map(s => s.t),
             senses: e.s.map((s, i) => ({
@@ -44,6 +46,31 @@ function analyzeWith(t, text) {
         role: roleFor(tok),
     }));
     // kanji view is ONLY!! for text with hiragana and no kanji
-    const kanji = !hasKanji && /[\u3041-\u309f]/.test(text) ? text.replace(/[\u3041-\u309f]+/g, run => beam(t, run).text) : "";
-    return {original: text, kanji, overall_meaning: "", words};
+    const parts = !hasKanji && /[\u3041-\u309f]/.test(text) ? kanjiParts(t, text) : [];
+    const kanji = parts.map(p => p.base).join("");
+    return {original: text, kanji, kanjiParts: parts, overall_meaning: "", words};
+}
+
+function kanjiParts(t, text) {
+    const parts = [];
+    for(const chunk of text.match(/[\u3041-\u309f]+|[^\u3041-\u309f]+/g) || []) {
+        if(!/^[\u3041-\u309f]/.test(chunk)) {
+            parts.push({base: chunk});
+            continue;
+        }
+        const words = segment(chunk);
+        const picks = beam(t, chunk).picks;
+        words.forEach((w, i) => {
+            const text = picks[i]?.text || w.surface;
+            if(text === w.surface) {
+                parts.push({base: text});
+                return;
+            }
+            const n = commonSuffix(text, w.surface);
+            parts.push({base: text.slice(0, text.length - n), ruby: w.surface.slice(0, w.surface.length - n)});
+            if(n > 0)
+                parts.push({base: text.slice(text.length - n)});
+        });
+    }
+    return parts;
 }
