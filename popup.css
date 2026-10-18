@@ -96,12 +96,17 @@
 }
 
 .jp-translation {
+    font: 14px/1.5 system-ui, sans-serif;
     color: var(--translation);
-    font-style: italic;
-    margin-bottom: 8px;
+    margin: -4px 0 8px;
 }
 .jp-translation:empty, .jp-role:empty {
     display: none;
+}
+.jp-translation::before {
+    content: "translation (offline ai): ";
+    font: 11px system-ui, sans-serif;
+    color: var(--muted);
 }
 
 .jp-divider {

@@ -1,6 +1,7 @@
 const status = document.getElementById("status");
 const enabledCheckbox = document.getElementById("enabled");
 const themeSelect = document.getElementById("theme");
+const translateCheckbox = document.getElementById("translate");
 
 function flash() {
     status.textContent = "saved!";
@@ -38,10 +39,11 @@ document.getElementById("export").addEventListener("click", () => {
     });
 })
 
-chrome.storage.sync.get(["enabled", "theme"], (data) => {
+chrome.storage.sync.get(["enabled", "theme", "translate"], (data) => {
     enabledCheckbox.checked = data.enabled !== false;
     themeSelect.value = data.theme || "auto";
     document.body.dataset.theme = themeSelect.value;
+    translateCheckbox.checked = data.translate === true;
 });
 
 enabledCheckbox.addEventListener("change", () => {
@@ -52,5 +54,9 @@ themeSelect.addEventListener("change", () => {
     document.body.dataset.theme = themeSelect.value;
     chrome.storage.sync.set({theme: themeSelect.value}, flash);
 })
+
+translateCheckbox.addEventListener("change", () => {
+    chrome.storage.sync.set({translate: translateCheckbox.checked}, flash);
+});
 
 renderVocab()

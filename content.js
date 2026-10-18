@@ -1,6 +1,7 @@
 let popupElement = null;
 let buttonElement = null;
 let currentTheme = "auto";
+let currentTranslate = false;
 
 document.addEventListener("mouseup", (e) => {
     if(buttonElement && buttonElement.contains(e.target))
@@ -20,10 +21,11 @@ document.addEventListener("mouseup", (e) => {
         return
     if(!/[\u3000-\u9fff\uff00-\uffef]/.test(selected))
         return;
-    chrome.storage.sync.get(["enabled", "theme"], (data) => {
+    chrome.storage.sync.get(["enabled", "theme", "translate"], (data) => {
         if(data.enabled === false)
             return;
         currentTheme = data.theme || "auto";
+        currentTranslate = data.translate === true;
         showButton(selected, e.clientX, e.clientY);
     });
 });
@@ -49,12 +51,13 @@ chrome.runtime.onMessage.addListener((msg) => {
     if(!text || !sel.rangeCount)
         return;
     const rect = sel.getRangeAt(0).getBoundingClientRect();
-    chrome.storage.sync.get(["enabled", "theme"], (data) => {
+    chrome.storage.sync.get(["enabled", "theme", "translate"], (data) => {
         if(data.enabled == false)
             return;
         if(!/[\u3000-\u9fff\uff00-\uffef]/.test(text))
             return;
         currentTheme = data.theme || "auto";
+        currentTranslate = data.translate === true;
         if(buttonElement) {
             buttonElement.remove();
             buttonElement = null;
@@ -205,6 +208,8 @@ function analyze(text, x, y) {
                 showError(response.error, x, y);
             } else {
                 showResult(response.result, x, y);
+                if(currentTranslate)
+                    requestTranslation(text);
             }
         }
     );
@@ -227,4 +232,16 @@ function esc(s) {
     return String(s ?? "").replace(/[&<>'"]/g, c => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     })[c]);
+}
+
+function requestTranslation(text) {
+    const box = popupElement?.querySelector(".jp-translation");
+    if(!box)
+        return;
+    box.textContent = "translating...";
+    chrome.runtime.sendMessage({type: "TRANSLATE", text}, (res) => {
+        if(!box.isConnected)
+            return;
+        box.textContent = res?.translation || "";
+    });
 }
