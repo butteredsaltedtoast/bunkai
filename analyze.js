@@ -30,7 +30,7 @@ function analyzeWith(t, text) {
         dictionary_form: tok.kanjiBase || tok.base_form,
         part_of_speech: tok.pos,
         meaning: tok.pos_detail_1 === "数" || /^[0-9０-９,.]+$/.test(tok.surface)
-            ? "number"
+            ? (Number.isFinite(parseJaNumber(tok.surface)) ? `number: ${parseJaNumber(tok.surface).toLocaleString("en-US")}` : "number")
             : tok.kanjiBase
                 ? lookup(tok.kanjiBase, tok.pos, tok.stemReading, tok.pos_detail_1)
                 : tok.bases?.length > 1

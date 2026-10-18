@@ -4,7 +4,7 @@ const kuromoji = require("kuromoji");
 
 const ctx = {dict: require("./dict"), console};
 vm.createContext(ctx);
-for (const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js", "posnames.js", "ngram.js", "kanjify.js", "analyze.js"])
+for (const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js", "posnames.js", "ngram.js", "kanjify.js", "analyze.js", "numbers.js"])
     vm.runInContext(fs.readFileSync("../" + f, "utf8"), ctx);
 
 let pass = 0, fail = 0;
@@ -128,6 +128,15 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     has("furigana-kyou", JSON.stringify(rain.kanjiParts), '"base":"今日","ruby":"きょう"');
     has("furigana-furu", JSON.stringify(rain.kanjiParts), '"base":"降","ruby":"ふ"');
     check("furigana-kanji-string", rain.kanji, "今日は朝から雨が降っています");
+
+    check("num-mixed", ctx.parseJaNumber("14万6千"), 146000);
+    check("num-kanji", ctx.parseJaNumber("三百五十"), 350);
+    check("num-plain", ctx.parseJaNumber("2020"), 2020);
+    check("num-fullwidth", ctx.parseJaNumber("１２"), 12);
+    check("num-kanji-digits", ctx.parseJaNumber("二〇二〇"), 2020);
+    check("num-junk", Number.isNaN(ctx.parseJaNumber("猫")), true);
+    has("num-glued", kanji("14万6千台"), "14万6千");
+    has("analyze-number", ctx.analyzeWith(t, "14万6千台").words[0].meaning, "146,000");
 
     console.log(`\n${pass} passed, ${fail} failed`);
 })
