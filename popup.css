@@ -167,7 +167,7 @@
     color: var(--red);
 }
 
-.jp-star {
+.jp-star, .jp-speak {
     all: unset;
     cursor: pointer;
     color: var(--red);

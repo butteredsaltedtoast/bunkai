@@ -159,7 +159,9 @@ function showResult(data, x, y) {
 
     el.querySelectorAll(".jp-speak").forEach(btn => {
         btn.addEventListener("click", () => {
-            const u = new SpeechSynthesisUtterance(data.words[btn.dataset.i].word);
+            const w = data.words[btn.dataset.i];
+            const say = w.part_of_speech === "助詞" ? ({"は": "わ", "へ": "え"}[w.word] || w.word) : w.word;
+            const u = new SpeechSynthesisUtterance(say);
             u.lang = "ja-JP";
             speechSynthesis.cancel();
             speechSynthesis.speak(u);
