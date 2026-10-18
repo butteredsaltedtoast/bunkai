@@ -35,11 +35,28 @@
                 padding: 48px 20px;
             }
 
+            footer {
+                margin-top: 64px;
+                font-size: 13px;
+                color: var(--muted);
+            }
+
             h1 {
                 font: 48px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
                 margin: 0;
-                border-bottom: 3px solid var(--red);
+                padding-bottom: 4px;
+                position: relative;
                 display: inline-block;
+            }
+            h1::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                height: 3px;
+                width: 100%;
+                background: var(--red);
+                transform-origin: left;
             }
 
             a {
@@ -47,6 +64,12 @@
             }
             a:hover {
                 text-decoration: none;
+            }
+
+            section img {
+                max-width: 100%;
+                border: 1px solid var(--line);
+                margin: 8px 0;
             }
 
             .sub {
@@ -72,6 +95,7 @@
                 border: 1px solid var(--red);
                 cursor: pointer;
                 font: inherit;
+                transition: background 0.15s, color 0.15s;
             }
             button:hover:not(:disabled) {
                 background: var(--red);
@@ -86,6 +110,20 @@
                 font-size: 13px;
                 color: var(--muted);
                 margin-left: 8px;
+            }
+
+            #examples {
+                margin: 8px 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .ex {
+                margin: 0;
+                font: 14px "Yu Mincho", serif;
+                color: var(--muted);
+                border-color: var(--line);
             }
 
             .kanji {
@@ -118,7 +156,46 @@
             section {
                 margin-top: 48px;
             }
+
+           /* anim stuff */
+
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+
+           .word, .kanji {
+            animation: rise 0.35s ease-out both;
+           }
+
+           h1::after {
+            animation: stamp 0.6s 0.2s ease-out both;
+           }
+
+           @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+           }
+
+           @keyframes stamp {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
+            }
+           }
+            
         </style>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>分</text></svg>">
     </head>
     <body>
         <main>
@@ -127,8 +204,21 @@
 
             <h2>try it</h2>
             <textarea id="input">きょうはあさからあめがふっています</textarea>
+            <div id="examples">
+                <button class="ex">きょうはあさからあめがふっています</button>
+                <button class="ex">わたしはねこがすきです</button>
+                <button class="ex">昨日たべられなかった</button>
+                <button class="ex">高いですが、買います</button>
+            </div>
             <button id="go" disabled>分解</button><span id="status">loading dictionary (~35mb, first time only)...</span>
             <div id="out"></div>
+
+            <section>
+                <h2>the extension</h2>
+                <img src="img/settings-popup.png" alt="bunkai settings">
+                <img src="img/wbw-no-translate.png" alt="bunkai word-by-word breakdown without sentence translation">
+                <img src="img/wbw-translate.png" alt="bunkai word-by-word breakdown with sentence translation">
+            </section>
 
             <section>
                 <h2>install</h2>
@@ -183,6 +273,10 @@
                     now, everything bunkai does, from splitting words to looking them up to picking kanji, is rules and counting.
                     it runs ENTIRELY in your browser, nothing gets sent anywhere sketchy, and there's no model to hallucinate in the first place.
                 </p>
+                <p>
+                    however! some form of ai is necessary for the full sentence translation. it's off by default, but i've included a small translation model with a one-time download of 80mb.
+                    it runs fully locally and gives a rough translation which could be helpful. enable it if you want!
+                </p>
                 <h3>bugs along the way</h3>
                 <p>of course, this thing said some really cursed stuff while it was being built. i thought they were kinda funny, so i'm putting my favorites here. enjoy.</p>
                 <ul>
@@ -197,6 +291,7 @@
                 </ul>
                 <p>...yeah.</p>
             </section>
+            <footer>made by <a href="https://github.com/butteredsaltedtoast">.butteredtoast</a> - <a href="https://github.com/butteredsaltedtoast/bunkai">source</a></footer>
         </main>
         
         <script src="../lib/kuromoji.js"></script>
@@ -245,8 +340,10 @@
                 out.replaceChildren();
                 if(r.kanji)
                     out.append(el("div", "kanji", "in kanji: " + r.kanji));
+                let k = 0;
                 for(const w of r.words) {
                     const row = el("div", "word");
+                    row.style.animationDelay = `${k++ * 40}ms`;
                     const top = el("div");
                     top.append(el("span", "surface", w.word), el("span", "reading", ` (${w.reading})`));
                     if(w.part_of_speech)
@@ -257,6 +354,12 @@
                     out.append(row);
                 }
             });
+
+            document.querySelectorAll(".ex").forEach(b => b.addEventListener("click", () => {
+                document.getElementById("input").value = b.textContent;
+                if(!go.disabled)
+                    go.click();
+            }));
         </script>
     </body>
 </html>
