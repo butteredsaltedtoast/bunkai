@@ -7,6 +7,7 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
         throw err;
     const uni = new Map(); // word to appearances
     const bi = new Map(); // how many times word2 follows word1
+    const tri = new Map(); // how many times word3 follows word1 word2
     const add = (m, k) => m.set(k, (m.get(k) || 0) + 1);
 
     let done = 0;
@@ -19,16 +20,24 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
             add(uni, words[k]);
             if(k > 0)
                 add(bi, words[k - 1] + "\t" + words[k]);
+            if(k > 1)
+                add(tri, words[k - 2] + "\t" + words[k - 1] + "\t" + words[k]);
         }
         if(done % 20000 === 0)
             console.log(done, "sentences"); // js for progress
         done++;
     }
+    // prune prune prune
     const biOut = {};
     for(const [k, v] of bi)
         if(v >= 2)
             biOut[k] = v;
-    fs.writeFileSync("data/ngram.json", JSON.stringify({uni: Object.fromEntries(uni), bi: biOut}));
+    const triOut = {};
+    for(const [k, v] of tri)
+        if(v >= 2)
+            triOut[k] = v;
+    fs.writeFileSync("data/ngram.json", JSON.stringify({uni: Object.fromEntries(uni), bi: biOut, tri: triOut}));
     console.log("words:", uni.size, "   pairs kept:", Object.keys(biOut).length, "of", bi.size);
+    console.log("triples kept:", Object.keys(triOut).length, "of", tri.size);
     console.log("file size:", fs.statSync("data/ngram.json").size);
 });

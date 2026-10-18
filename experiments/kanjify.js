@@ -189,6 +189,21 @@ const fresh2 = [ // i decided i'm adding meaning comments to these, starting now
     ["このりょうりはちょっとからいです", "この料理はちょっと辛いです"], // this food is a little spicy
 ];
 
+const fresh3 = [
+    ["しゅうまつにやまにのぼりました", "週末に山に登りました"], // i climbed a mountain on the weekend
+    ["かのじょはうたがじょうずです", "彼女は歌が上手です"], // she's good at singing
+    ["このにもつはおもいです", "この荷物は重いです"], // this luggage is heavy
+    ["あしたはやくおきなければなりません", "明日早く起きなければなりません"], // i have to wake up early tomorrow
+    ["いもうとはピアノをひいています", "妹はピアノを弾いています"], // my little sister is playing piano
+    ["てがみをおくりたいです", "手紙を送りたいです"], // i want to send a letter
+    ["ちちはしんぶんをよんでいます", "父は新聞を読んでいます"], // my dad is reading the newspaper
+    ["そとはとてもしずかです", "外はとても静かです"], // it's very quiet outside
+    ["あさごはんのあとでさんぽします", "朝ごはんの後で散歩します"], // i take a walk after breakfast
+    ["あたまがいたいのでやすみます", "頭が痛いので休みます"], // i have a headache so i'll rest
+    ["あにはくるまをうんてんしています", "兄は車を運転しています"], // my older brother is driving
+    ["だいどころでりょうりをつくっています", "台所で料理を作っています"], // i'm cooking in the kitchen
+];
+
 if(require.main === module) {
     function score() {
         let pass = 0;
@@ -206,4 +221,4 @@ if(require.main === module) {
     console.log(JSON.stringify(options("かぜをひいてがっこうをやすみました")));
 }
 
-module.exports = {kanjify, options, cases, fresh, fresh2};
+module.exports = {kanjify, options, cases, fresh, fresh2, fresh3};

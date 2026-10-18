@@ -16,9 +16,15 @@ function ngramScore(t, text) {
     let total = 0;
     for(let k = 1; k < words.length; k++) {
         const prev = words[k - 1], w = words[k];
-        const pBi = NG.uni[prev] ? (NG.bi[prev + "\t" + w] || 0) / NG.uni[prev] : 0;
         const pUni = ((NG.uni[w] || 0) + 1) / (NG_N + NG_V);
-        total += Math.log(0.8 * pBi + 0.2 * pUni);
+        const pBi = NG.uni[prev] ? (NG.bi[prev + "\t" + w] || 0) / NG.uni[prev] : 0;
+        if(k < 2) {
+            total += Math.log(0.8 * pBi + 0.2 * pUni);
+            continue;
+        }
+        const pair = words[k - 2] + "\t" + prev;
+        const pTri = NG.bi[pair] ? (NG.tri[pair + "\t" + w] || 0) / NG.bi[pair] : 0;
+        total += Math.log(0.6 * pTri + 0.3 * pBi + 0.1 * pUni);
     }
     return total;
 }

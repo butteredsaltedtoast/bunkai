@@ -1,7 +1,7 @@
 import {createRequire} from "module";
 import {score} from "./ngram.mjs";
 const require = createRequire(import.meta.url);
-const {options, cases, fresh, fresh2} = require("./kanjify.js");
+const {options, cases, fresh, fresh2, fresh3} = require("./kanjify.js");
 
 export async function beam(s, width = 3) {
     let beams = [{text: "", score: 0}];
@@ -46,5 +46,6 @@ if(import.meta.url === `file://${process.argv[1]}`) {
     await run("old", cases);
     await run("fresh", fresh);
     await run("fresh2", fresh2);
+    await run("fresh3", fresh3);
     console.log(`total: ${totalcorrect}/${total}\n`);
 }

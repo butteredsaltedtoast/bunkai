@@ -2,7 +2,7 @@ import {createRequire} from "module";
 const require = createRequire(import.meta.url);
 const fs = require("fs");
 const kuromoji = require("kuromoji");
-const {uni, bi} = JSON.parse(fs.readFileSync("data/ngram.json", "utf8"));
+const {uni, bi, tri} = JSON.parse(fs.readFileSync("data/ngram.json", "utf8"));
 const N = Object.values(uni).reduce((a, b) => a + b, 0); // total
 const V = Object.keys(uni).length; // unique
 const t = await new Promise((res, rej) => kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((e, tk) => e ? rej(e) : res(tk))); // longest line ever
@@ -14,7 +14,13 @@ export function score(text) { // Q: how natural is this sentence? A: sum of log 
         const prev = words[k - 1], w = words[k];
         const pUni = ((uni[w] || 0) + 1) / (N + V);
         const pBi = uni[prev] ? (bi[prev + "\t" + w] || 0) / uni[prev] : 0;
-        total += Math.log(0.2 * pUni + 0.8 * pBi);
+        if(k < 2) {
+            total += Math.log(0.8 * pBi + 0.2 * pUni);
+            continue;
+        }
+        const pair = words[k - 2] + "\t" + prev;
+        const pTri = bi[pair] ? (tri[pair + "\t" + w] || 0) / bi[pair] : 0;
+        total += Math.log(0.6 * pTri + 0.3 * pBi + 0.1 * pUni);
     }
     return total;
 }
