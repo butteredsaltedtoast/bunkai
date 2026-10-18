@@ -1,7 +1,20 @@
+// settings stuff
 const status = document.getElementById("status");
 const enabledCheckbox = document.getElementById("enabled");
 const themeSelect = document.getElementById("theme");
 const translateCheckbox = document.getElementById("translate");
+
+// review stuff
+const card = document.getElementById("card");
+const front = document.getElementById("card-front");
+const back = document.getElementById("card-back");
+const showBtn = document.getElementById("show");
+const againBtn = document.getElementById("again");
+const goodBtn = document.getElementById("good");
+const startBtn = document.getElementById("start-review");
+const reviewStatus = document.getElementById("review-status");
+
+// settings
 
 function flash() {
     status.textContent = "saved!";
@@ -60,3 +73,64 @@ translateCheckbox.addEventListener("change", () => {
 });
 
 renderVocab()
+
+// review
+
+let queue = [];
+let current = null;
+function startReview() {
+    chrome.storage.local.get(["vocab"], (data) => {
+        const vocab = data.vocab || [];
+        if(!vocab.length) {
+            reviewStatus.textContent = "save some words first!";
+            return;
+        }
+        // mini leitner
+        queue = [...vocab].sort((a, b) => (a.box || 0) - (b.box || 0) || Math.random() - 0.5).slice(0, 10);
+        reviewStatus.textContent = "";
+        showNext();
+    })
+}
+
+function showNext() {
+    current = queue.shift();
+    if(!current) {
+        card.hidden = true;
+        startBtn.hidden = false;
+        reviewStatus.textContent = "finished!!!";
+        return;
+    }
+    card.hidden = false;
+    startBtn.hidden = true;
+    front.textContent = current.dictionary_form;
+    back.textContent = `${current.reading}: ${current.meaning}`;
+    back.hidden = true;
+    showBtn.hidden = false;
+    againBtn.hidden = true;
+    goodBtn.hidden = true;
+}
+
+function answer(correct) {
+    chrome.storage.local.get(["vocab"], (data) => {
+        const vocab = data.vocab || [];
+        const v = vocab.find(x => x.dictionary_form === current.dictionary_form);
+        if(v)
+            v.box = correct ? (v.box || 0) + 1 : 0;
+        if(!correct)
+            queue.push(current);
+        chrome.storage.local.set({vocab}, () => {
+            renderVocab();
+            showNext();
+        });
+    });
+}
+
+startBtn.addEventListener("click", startReview);
+showBtn.addEventListener("click", () => {
+    back.hidden = false;
+    showBtn.hidden = true;
+    againBtn.hidden = false;
+    goodBtn.hidden = false;
+});
+againBtn.addEventListener("click", () => answer(false));
+goodBtn.addEventListener("click", () => answer(true));
