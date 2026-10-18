@@ -234,3 +234,31 @@
 .jp-kanji:empty {
     display: none;
 }
+
+.jp-ex-title {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.jp-examples {
+    margin: 4px 0 0;
+    padding-left: 16px;
+    list-style: disc;
+}
+.jp-examples li {
+    margin: 4px 0;
+    display: list-item;
+}
+
+.jp-ex-jp {
+    font: 14px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+    color: var(--ink);
+}
+
+.jp-ex-en {
+    font-size: 11px;
+    color: var(--muted);
+}

@@ -44,6 +44,7 @@ function analyzeWith(t, text) {
             }))
         })),
         role: roleFor(tok),
+        examples: examplesFor(tok.kanjiBase, tok.base_form, dict.get(tok.base_form)?.[0]?.k[0]?.t),
     }));
     // kanji view is ONLY!! for text with hiragana and no kanji
     const parts = !hasKanji && /[\u3041-\u309f]/.test(text) ? kanjiParts(t, text) : [];

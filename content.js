@@ -128,6 +128,10 @@ function showResult(data, x, y) {
                 <ol>${d.senses.map(s => `<li><span class="jp-sense-pos">${esc(s.pos)}</span> ${esc(s.gloss)}</li>`).join("")}</ol>
             </div>
         `).join("");
+
+        const exHtml = (w.examples || []).map(([jp, en]) => 
+            `<li><div class="jp-ex-jp">${esc(jp)}</div><div class="jp-ex-en">${esc(en)}</div></li>`
+        ).join("");
         
         return `
             <div class="jp-word">
@@ -140,7 +144,7 @@ function showResult(data, x, y) {
                 </div>
                 <div class="jp-meaning">${esc(w.meaning)}</div>
                 <div class="jp-role">${esc(w.role)}</div>
-                <div class="jp-details">${detailsHtml}</div>
+                <div class="jp-details">${detailsHtml}${exHtml ? `<div class="jp-ex-title">examples</div><ul class="jp-examples">${exHtml}</ul>` : ""}</div>
             </div>
         `;
     }).join("");

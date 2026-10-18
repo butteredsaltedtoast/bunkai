@@ -6,6 +6,7 @@ const ready = new Promise(resolve => {
         }
         await loadDict();
         await loadNgram();
+        await loadExamples();
         resolve(t);
     });
 });

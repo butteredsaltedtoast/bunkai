@@ -4,7 +4,7 @@ const kuromoji = require("kuromoji");
 
 const ctx = {dict: require("./dict"), console};
 vm.createContext(ctx);
-for (const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js", "posnames.js", "ngram.js", "kanjify.js", "analyze.js", "numbers.js"])
+for (const f of ["deinflect.js", "segment.js", "merge.js", "lookup.js", "roles.js", "posnames.js", "ngram.js", "kanjify.js", "examples.js", "analyze.js", "numbers.js"])
     vm.runInContext(fs.readFileSync("../" + f, "utf8"), ctx);
 
 let pass = 0, fail = 0;
@@ -28,6 +28,7 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     if(err)
         throw err;
     ctx.setNgram(JSON.parse(fs.readFileSync("../data/ngram.json", "utf8")));
+    ctx.setExamples(JSON.parse(fs.readFileSync("../data/example.json", "utf8")));
     const kana = s => ctx.segment(s).map(w => w.surface);
     const kanji = s => ctx.merge(t.tokenize(s)).map(c => c.surface);
 
@@ -129,14 +130,19 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     has("furigana-furu", JSON.stringify(rain.kanjiParts), '"base":"降","ruby":"ふ"');
     check("furigana-kanji-string", rain.kanji, "今日は朝から雨が降っています");
 
-    check("num-mixed", ctx.parseJaNumber("14万6千"), 146000);
+    check("num-mixed", ctx.parseJaNumber("14万6千"), 146000); // these are to test the number parser
     check("num-kanji", ctx.parseJaNumber("三百五十"), 350);
     check("num-plain", ctx.parseJaNumber("2020"), 2020);
     check("num-fullwidth", ctx.parseJaNumber("１２"), 12);
     check("num-kanji-digits", ctx.parseJaNumber("二〇二〇"), 2020);
     check("num-junk", Number.isNaN(ctx.parseJaNumber("猫")), true);
     has("num-glued", kanji("14万6千台"), "14万6千");
-    has("analyze-number", ctx.analyzeWith(t, "14万6千台").words[0].meaning, "146,000");
+    has("analyze-number", ctx.analyzeWith(t, "14万6千台").words[0].meaning, "146,000"); // as well as the gluer
+
+    check("examples-neko", ctx.examplesFor("猫").length > 0, true); // i made these tests to check if the example stuff works.
+    check("examples-pair", ctx.examplesFor("猫")[0].length, 2);
+    check("examples-missing", ctx.examplesFor("めめめめ"), []);
+    check("analyze-examples", rain.words[2].examples.length > 0, true);
 
     console.log(`\n${pass} passed, ${fail} failed`);
 })
