@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>bunkai (分解)</title>
+        <style>
+            :root {
+                --paper: #faf7f0;
+                --ink: #1a1a1a;
+                --red: #c8361d;
+                --muted: #888;
+                --line: #ccc;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --paper: #1c1b19;
+                    --ink: #faf7f0;
+                    --red: #e5533a;
+                    --muted: #999;
+                    --line: #444;
+                }
+            }
+
+            body {
+                margin: 0;
+                background: var(--paper);
+                color: var(--ink);
+                font: 16px/1.6 system-ui, sans-serif;
+            }
+
+            main {
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 48px 20px;
+            }
+
+            h1 {
+                font: 48px "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+                margin: 0;
+                border-bottom: 3px solid var(--red);
+                display: inline-block;
+            }
+
+            a {
+                color: var(--red);
+            }
+            a:hover {
+                text-decoration: none;
+            }
+
+            .sub {
+                color: var(--muted);
+            }
+
+            textarea {
+                width: 100%;
+                box-sizing: border-box;
+                min-height: 80px;
+                padding: 10px;
+                font: 18px "Yu Mincho", serif;
+                background: var(--paper);
+                color: var(--ink);
+                border: 1px solid var(--ink);
+            }
+
+            button {
+                margin-top: 8px;
+                padding: 6px 16px;
+                background: var(--paper);
+                color: var(--red);
+                border: 1px solid var(--red);
+                cursor: pointer;
+                font: inherit;
+            }
+            button:hover:not(:disabled) {
+                background: var(--red);
+                color: var(--paper);
+            }
+            button:disabled {
+                opacity: 0.5;
+                cursor: wait;
+            }
+
+            #status {
+                font-size: 13px;
+                color: var(--muted);
+                margin-left: 8px;
+            }
+
+            .kanji {
+                font: 20px "Yu Mincho", serif;
+                margin: 16px 0;
+            }
+
+            .word {
+                border-bottom: 1px dashed var(--line);
+                padding: 8px 0;
+            }
+
+            .surface {
+                font: 22px "Yu Mincho", serif;
+            }
+
+            .reading, .role {
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+            .pos {
+                color: var(--red);
+                border: 1px solid var(--red);
+                font-size: 11px;
+                padding: 0 4px;
+                margin-left: 6px;
+            }
+
+            section {
+                margin-top: 48px;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>分解 bunkai</h1>
+            <p class="sub">break down any japanese sentence word by word. now fully offline! no api key needed.</p>
+
+            <h2>try it</h2>
+            <textarea id="input">きょうはあさからあめがふっています</textarea>
+            <button id="go" disabled>分解</button><span id="status">loading dictionary (~35mb, first time only)...</span>
+            <div id="out"></div>
+
+            <section>
+                <h2>install</h2>
+                <ol>
+                    <li>download the latest release from <a href="https://github.com/butteredsaltedtoast/bunkai/releases">github</a> and unzip it</li>
+                    <li>go to <code>chrome://extensions</code> and turn on developer mode</li>
+                    <li>click "load unpacked" and pick the folder</li>
+                </ol>
+            </section>
+
+            <section>
+                <h2>how it works</h2>
+                <h3>the hard part</h3>
+                <p>
+                    splitting japanese is hard!! english has spaces, so splitting it is easy as setting spaces as your delimiter.
+                    japanese doesn't, so something like "わたしはねこがすきです" is just one long string of letters, and a computer has to guess how it's split up.
+                    hiragana-only is even harder, because it's more ambiguous. for example, はは could be 母(mom) or は and は, two topic particles.
+                </p>
+                <h3>splitting sentences into words</h3>
+                <p>
+                    now, there IS already a free library called kuromoji that's good at splitting normal japanese.
+                    however, it chops up verbs into itty bitty pieces! like 食べ / られ / なかっ / た. so! i wrote code to glue those pieces back into one word.
+                </p>
+                <p>
+                    also. kuromoji is bad at all-hiragana, so i had to write my own splitter!
+                    the way it works is every possible word gets a cost. it's based on a couple of things.
+                    common words are cheap, particles are really cheap, and weird single characters are expensive.
+                    the splitter finds the configuration with the lowest total cost with dynamic programming for efficiency.
+                    to recognize conjugated verbs, i wrote code to turn it back into dictionary form.
+                </p>
+                <h3>figuring out the kanji</h3>
+                <p>
+                    let's take あさ for example. it could be morning. or cannabis. who knows? not the dictionary.
+                    so, it tries each spelling and asks itself, "which version of the whole sentence sounds most like real japanese?"
+                    but how do we ask that question??? well, we count words that show up next to each other, of course! from around 249000 real sentences.
+                    for our あさ example, 朝から(from morning) shows up a lot, and 麻から(from cannabis) basically never does.
+                    oh, and instead of trying literally every combo, it builds left to right and only keeps the best 3 at each step (beam search!).
+                </p>
+                <h3>no ai, fully offline</h3>
+                <p>
+                    version one of this extension was all ai. the original bunkai sent your text to google's gemini.
+                    and so, it needed an api key, and internet, and the highlighted text left your computer and went to who knows where.
+                    and it was just a big AI model, so it could make up anything it felt like! ew!
+                    so, i decided, no way jose, i'm going through tens of hours of work to rip out gemini!!
+                    (basically, i rebuilt everything with a dictionary and rules, all local!)
+                    however... to pick the right kanji, the rules didn't work too well.
+                    so, "AI", in a sense, almost came back, with an attempt to use qwen (a 500mb neural network) to score natural-sounding kanji.
+                    it worked kinda well, but 500mb was waaay too big to put in an extension. also, ew, ai (sort of)!
+                    so! i replaced it with counting. an n-gram model that counts which words appear next to each other in real sentences.
+                    it was so, so, SO much better. oh my.
+                    it was only 3 megabytes. it was instant. it was better?! and it's not ai! just stats from the '80s.
+                    now, everything bunkai does, from splitting words to looking them up to picking kanji, is rules and counting.
+                    it runs ENTIRELY in your browser, nothing gets sent anywhere sketchy, and there's no model to hallucinate in the first place.
+                </p>
+                <h3>bugs along the way</h3>
+                <p>of course, this thing said some really cursed stuff while it was being built. i thought they were kinda funny, so i'm putting my favorites here. enjoy.</p>
+                <ul>
+                    <li><b>が</b> (the subject particle) came out as "moth." <b>こと</b> (thing) was a 13-stringed japanese zither.</li>
+                    <li><b>わたし</b> (i/me) was "ferry." i guess i am boat... </li>
+                    <li>"today it's been raining since the morning" became "today it's been raining since the <b>cannabis sect</b>." which is unfortunate? maybe?</li>
+                    <li>"i'm fine" (げんきです) turned into "i'm fine at bamboo screen." good for you.</li>
+                    <li>"i play baseball with my dad" turned into "i know baseball with 乳." you can translate that kanji yourself.</li>
+                    <li>"there's a box on the shelf" turned into "there's a <b>daughter</b> on the shelf." get her down from there!!</li>
+                    <li>"i want to buy a new car" turned into "i want to <b>dismantle</b> a new car." (um don't do that guys)</li>
+                    <li>"i caught a cold and missed school" turned into... "i <b>played my cold like a musical instrument</b> and missed school." bro played his ailment like a fiddle.</li>
+                </ul>
+                <p>...yeah.</p>
+            </section>
+        </main>
+        
+        <script src="../lib/kuromoji.js"></script>
+        <script src="../dict.js"></script>
+        <script src="../lookup.js"></script>
+        <script src="../merge.js"></script>
+        <script src="../deinflect.js"></script>
+        <script src="../segment.js"></script>
+        <script src="../roles.js"></script>
+        <script src="../posnames.js"></script>
+        <script src="../ngram.js"></script>
+        <script src="../kanjify.js"></script>
+        <script src="../analyze.js"></script>
+        <script>
+            const go = document.getElementById("go");
+            const status = document.getElementById("status");
+            const out = document.getElementById("out");
+            let T = null;
+            kuromoji.builder({dicPath: "../lib/dict/"}).build(async (err, t) => {
+                if(err) {
+                    status.textContent = "failed to load :(";
+                    console.error(err);
+                    return;
+                }
+                await loadDict("../");
+                await loadNgram("../");
+                T = t;
+                status.textContent = "ready!";
+                go.disabled = false;
+            });
+
+            function el(tag, cls, text) {
+                const e = document.createElement(tag);
+                if(cls)
+                    e.className = cls;
+                if(text)
+                    e.textContent = text;
+                return e;
+            }
+
+            go.addEventListener("click", () => {
+                const text = document.getElementById("input").value.trim();
+                if(!text)
+                    return;
+                const r = analyzeWith(T, text);
+                out.replaceChildren();
+                if(r.kanji)
+                    out.append(el("div", "kanji", "in kanji: " + r.kanji));
+                for(const w of r.words) {
+                    const row = el("div", "word");
+                    const top = el("div");
+                    top.append(el("span", "surface", w.word), el("span", "reading", ` (${w.reading})`));
+                    if(w.part_of_speech)
+                        top.append(el("span", "pos", w.part_of_speech));
+                    row.append(top, el("div", "", w.meaning));
+                    if(w.role)
+                        row.append(el("div", "role", w.role));
+                    out.append(row);
+                }
+            });
+        </script>
+    </body>
+</html>
