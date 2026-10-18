@@ -147,6 +147,7 @@ function showResult(data, x, y) {
             <span class="jp-original">${esc(data.original)}</span>
             <button class="jp-close" id="jp-close-btn">✕</button>
         </div>
+        <div class="jp-kanji">${esc(data.kanji)}</div>
         <div class="jp-translation">${esc(data.overall_meaning)}</div>
         <div class="jp-divider"></div>
         <div class="jp-words">${words}</div>

@@ -1,15 +1,14 @@
 let dict = null;
-async function loadDict() {
-    const res = await fetch("data/jmdict.json");
+
+async function loadDict(base = "") {
+    const res = await fetch(base + "data/jmdict.json");
     const data = await res.json();
-    const spellingToEntries = new Map()
+    const spellingToEntries = new Map();
     for(const entry of data) {
         for(const s of [...entry.k, ...entry.r]) {
-            const k = s.t;
-            if(!spellingToEntries.has(k)) {
-                spellingToEntries.set(k, [])
-            }
-            spellingToEntries.get(k).push(entry)
+            if(!spellingToEntries.has(s.t))
+                spellingToEntries.set(s.t, []);
+            spellingToEntries.get(s.t).push(entry);
         }
     }
     dict = spellingToEntries;
