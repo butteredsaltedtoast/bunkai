@@ -3,6 +3,8 @@ const status = document.getElementById("status");
 const enabledCheckbox = document.getElementById("enabled");
 const themeSelect = document.getElementById("theme");
 const translateCheckbox = document.getElementById("translate");
+const furiganaCheckbox = document.getElementById("furigana");
+const examplesCheckbox = document.getElementById("show-examples");
 
 // review stuff
 const card = document.getElementById("card");
@@ -57,11 +59,13 @@ document.getElementById("export").addEventListener("click", () => {
     });
 })
 
-chrome.storage.sync.get(["enabled", "theme", "translate"], (data) => {
+chrome.storage.sync.get(["enabled", "theme", "translate", "furigana", "showExamples"], (data) => {
     enabledCheckbox.checked = data.enabled !== false;
     themeSelect.value = data.theme || "auto";
     document.body.dataset.theme = themeSelect.value;
     translateCheckbox.checked = data.translate === true;
+    furiganaCheckbox.checked = data.furigana !== false;
+    examplesCheckbox.checked = data.showExamples !== false;
 });
 
 enabledCheckbox.addEventListener("change", () => {
@@ -148,4 +152,10 @@ resetBtn.addEventListener("click", () => {
             reviewStatus.textContent = "progress reset";
         });
     });
+});
+furiganaCheckbox.addEventListener("change", () => {
+    chrome.storage.sync.set({furigana: furiganaCheckbox.checked}, flash);
+});
+examplesCheckbox.addEventListener("change", () => {
+    chrome.storage.sync.set({showExamples: examplesCheckbox.checked}, flash);
 });

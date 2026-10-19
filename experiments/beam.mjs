@@ -3,7 +3,7 @@ const require = createRequire(import.meta.url);
 const fs = require("fs");
 const vm = require("vm");
 const kuromoji = require("kuromoji");
-const {cases, fresh, fresh2, fresh3} = require("./sets.js");
+const {cases, fresh, fresh2, fresh3, fresh4} = require("./sets.js");
 
 const ctx = {dict: require("./dict"), console};
 vm.createContext(ctx);
@@ -35,4 +35,5 @@ run("old", cases);
 run("fresh", fresh);
 run("fresh2", fresh2);
 run("fresh3", fresh3);
+run("fresh4", fresh4);
 console.log(`total: ${totalCorrect}/${total}`);

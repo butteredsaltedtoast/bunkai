@@ -86,4 +86,19 @@ const fresh3 = [
     ["だいどころでりょうりをつくっています", "台所で料理を作っています"], // i'm cooking in the kitchen
 ];
 
-module.exports = {cases, fresh, fresh2, fresh3};
+const fresh4 = [ // test for multi-split beam!!!
+    ["まいしゅうどようびにテニスをします", "毎週土曜日にテニスをします"], // i play tennis every saturday
+    ["えきのちかくにあたらしいみせができました", "駅の近くに新しい店ができました"], // a new store opened up near the station
+    ["あねはだいがくでれきしをべんきょうしています", "姉は大学で歴史を勉強しています"], // my older sister studies history at college
+    ["きのうのよるははやくねました", "昨日の夜は早く寝ました"], // i went to bed early last night
+    ["このかわはとてもふかいです", "この川はとても深いです"],　// this river is very deep
+    ["そぼにてがみをかきました", "祖母に手紙を書きました"],　// i wrote a letter to my grandma
+    ["まどからうみがみえます", "窓から海が見えます"],　// you can see the sea from the window
+    ["おとうとはいぬのさんぽにいきました", "弟は犬の散歩に行きました"],　// my little brother went to walk the dog
+    ["けさはゆきがふっています", "今朝は雪が降っています"],　// it was snowing this morning
+    ["らいげつきょうとへりょこうします", "来月京都へ旅行します"], // i'm travelling to kyoto next month
+    ["せんせいのはなしはとてもながかった", "先生の話はとても長かった"],
+    ["こうえんでしゃしんをとりました", "公園で写真を撮りました"],
+]
+
+module.exports = {cases, fresh, fresh2, fresh3, fresh4};

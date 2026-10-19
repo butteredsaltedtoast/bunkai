@@ -2,8 +2,12 @@ let popupElement = null;
 let buttonElement = null;
 let currentTheme = "auto";
 let currentTranslate = false;
+let currentFurigana = true;
+let currentExamples = true;
 
 document.addEventListener("mouseup", (e) => {
+    if(!chrome.runtime?.id)
+        return;
     if(buttonElement && buttonElement.contains(e.target))
         return;
     if(popupElement && popupElement.contains(e.target))
@@ -21,11 +25,13 @@ document.addEventListener("mouseup", (e) => {
         return
     if(!/[\u3000-\u9fff\uff00-\uffef]/.test(selected))
         return;
-    chrome.storage.sync.get(["enabled", "theme", "translate"], (data) => {
+    chrome.storage.sync.get(["enabled", "theme", "translate", "furigana", "showExamples"], (data) => {
         if(data.enabled === false)
             return;
         currentTheme = data.theme || "auto";
         currentTranslate = data.translate === true;
+        currentFurigana = data.furigana !== false;
+        currentExamples = data.showExamples !== false;
         showButton(selected, e.clientX, e.clientY);
     });
 });
@@ -51,13 +57,15 @@ chrome.runtime.onMessage.addListener((msg) => {
     if(!text || !sel.rangeCount)
         return;
     const rect = sel.getRangeAt(0).getBoundingClientRect();
-    chrome.storage.sync.get(["enabled", "theme", "translate"], (data) => {
+    chrome.storage.sync.get(["enabled", "theme", "translate", "furigana", "showExamples"], (data) => {
         if(data.enabled == false)
             return;
         if(!/[\u3000-\u9fff\uff00-\uffef]/.test(text))
             return;
         currentTheme = data.theme || "auto";
         currentTranslate = data.translate === true;
+        currentFurigana = data.furigana !== false;
+        currentExamples = data.showExamples !== false;
         if(buttonElement) {
             buttonElement.remove();
             buttonElement = null;
@@ -129,15 +137,13 @@ function showResult(data, x, y) {
             </div>
         `).join("");
 
-        const exHtml = (w.examples || []).map(([jp, en]) => 
-            `<li><div class="jp-ex-jp">${esc(jp)}</div><div class="jp-ex-en">${esc(en)}</div></li>`
-        ).join("");
+        const exHtml = currentExamples ? (w.examples || []).map(([jp, en]) => `<li><div class="jp-ex-jp">${esc(jp)}</div><div class="jp-ex-en">${esc(en)}</div></li>`).join("") : "";
         
         return `
             <div class="jp-word">
                 <div class="jp-word-top">
                     <span class="jp-surface">${esc(w.word)}</span>
-                    <span class="jp-reading">(${w.reading ? `(${esc(w.reading)})` : ""})</span>
+                    <span class="jp-reading">${w.reading ? `(${esc(w.reading)})` : ""}</span>
                     <span class="jp-pos">${esc(w.part_of_speech)}</span>
                     <button class="jp-star" data-i="${i}">☆</button>
                     <button class="jp-speak" data-i="${i}">🔊</button>
@@ -154,7 +160,7 @@ function showResult(data, x, y) {
             <span class="jp-original">${esc(data.original)}</span>
             <button class="jp-close" id="jp-close-btn">✕</button>
         </div>
-        <div class="jp-kanji">${(data.kanjiParts || []).map(p => p.ruby ? `<ruby>${esc(p.base)}<rt>${esc(p.ruby)}</rt></ruby>` : esc(p.base)).join("")}</div>
+        <div class="jp-kanji">${(data.kanjiParts || []).map(p => p.ruby && currentFurigana ? `<ruby>${esc(p.base)}<rt>${esc(p.ruby)}</rt></ruby>` : esc(p.base)).join("")}</div>
         <div class="jp-translation">${esc(data.overall_meaning)}</div>
         <div class="jp-divider"></div>
         <div class="jp-words">${words}</div>
