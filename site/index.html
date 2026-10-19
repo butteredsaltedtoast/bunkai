@@ -288,6 +288,13 @@
                     for our あさ example, 朝から(from morning) shows up a lot, and 麻から(from cannabis) basically never does.
                     oh, and instead of trying literally every combo, it builds left to right and only keeps the best 3 at each step (beam search!).
                 </p>
+                <p>
+                    later on i upgraded it to look at the last TWO words instead of one (a trigram!). for example, that's how it knows 風邪をひいて means catching a cold, but ぴあのをひいて means playing piano.
+                </p>
+                <p>
+                    and ONE more trick. my splitter used to commit to just a single way of splitting the sentence before the kanji picker looked at it.
+                    what that basically means is that if it split it wrong, the kanji picker was doomed. NOW the splitter hands over its 3 best guesses, the kanji picker tries all of them, and whichever version sounds the most real wins.
+                </p>
                 <h3>no ai, fully offline</h3>
                 <p>
                     version one of this extension was all ai. the original bunkai sent your text to google's gemini.
@@ -308,6 +315,14 @@
                     however! some form of ai is necessary for the full sentence translation. it's off by default, but i've included a small translation model with a one-time download of 80mb.
                     it runs fully locally and gives a rough translation which could be helpful. enable it if you want!
                 </p>
+                <h3>other stuff it does</h3>
+                <ul>
+                    <li><b>furigana</b> - the kanji version shows readings on top of each kanji, so you can actually read it</li>
+                    <li><b>example sentences</b> - clicking a word in the extension shows some real sentences from Tatoeba that use it</li>
+                    <li><b>numbers</b> - for example, 14万6千 shows up as 146000 and shows pronunciation, じゅうよんまんろくせん. </li>
+                    <li><b>flashcards</b> - star words, then review them right in the extension. words you miss on multiple occasions come back more</li>
+                    <li><b>right click</b> - select test, right click, "break down with bunkai"</li>
+                </ul>
                 <h3>bugs along the way</h3>
                 <p>of course, this thing said some really cursed stuff while it was being built. i thought they were kinda funny, so i'm putting my favorites here. enjoy.</p>
                 <ul>
