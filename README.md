@@ -4,23 +4,23 @@ Bunkai is a Chrome extension that breaks Japanese text down word by word. Highli
 
 For the most part, Bunkai runs entirely on your computer! The default configuration does not use any form of AI, and runs fully locally.
 
-If you would like a rough translation along with the word-by-word breakdown, there is an option to enable a local small language model to translate the sentence, but there is a required one-time download from Hugging Face the first time you turn it on.
+If you would like a rough translation along with the word-by-word breakdown, there is an option to enable a local small translation model to translate the sentence, but there is a required one-time download from Hugging Face the first time you turn it on.
 
 ## Features
 
 - [Try it in your browser, no installation needed!](https://butteredsaltedtoast.github.io/bunkai/site/)
 - Highlight Japanese, click 分解 (or press **Alt+B**), get a word-by-word breakdown
 - **Right click** any highlighted text and choose Bunkai from the context menu if you prefer
-- **Furigana** shows the reading above each kanji
 - Click any word to expand every meaning, other spellings, and grammar info (godan verb, い-adjective, others)
 - **Example sentences** appear when expanding a word. It shows real sentences that use it from Tatoeba.
-- Hiragana-only sentences show their kanji version
+- Hiragana-only sentences show their kanji version, with **furigana** above each kanji
 - Optional offline sentence translation (off by default, downloads ~80mb first time ONLY)
 - Speaker icon reads a word out loud
 - Star icon saves a word to your vocab list (click the extension icon to use it)
+- Explains what particles do in the sentence
 - **Flashcards** let you review your starred words as flashcards right in the extension menu!
 - **Export CSV** gives you a file to import into something like Anki
-- Explains what particles do in the sentence
+- Numbers like 14万6千 show up as 146,000 with pronunciation
 - Light/Dark/Auto theme
 - Esc to close
 
@@ -30,7 +30,7 @@ If you would like a rough translation along with the word-by-word breakdown, the
 - **Hiragana-only text** (the kind beginners actually read :O) goes through my own segmenter instead, since kuromoji isn't really good at it. It's a dynamic programming word-break that prefers common words combined with a deinflector.
 - Every word gets looked up in [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html), ranked by how common it is. If a word is *really* ambiguous, it just shows the top options.
 - **Particles** get a short explanation of what they're doing in the sentence (like は marking the topic, を marking the object, etc.). For ones that can do two different things like が, it uses grammar tags to pick the right one.
-- **Picking kanji** for hiragana scores every word's possible spelling with an n-gram model (word-pair counts from around 249k sentences in [Tatoeba](https://tatoeba.org)), and beam search keeps the 3 most natural versions as it builds the sentence.
+- **Picking kanji** for hiragana: the segmenter gives its 3 best ways to split the sentence, every word's possible kanji spellings get scored with a trigram model (word-triple counts from ~249k sentences in [Tatoeba](https://tatoeba.org)), and beam search keeps the 3 most natural versions as it builds each one. Whichever finished sentence sounds the realest wins.
 - **Example sentences** come from the same Tatoeba data, paired with their English translations.
 
 ## Install
@@ -44,8 +44,7 @@ If you would like a rough translation along with the word-by-word breakdown, the
 
 - The small translation model gives a rough translation (it's small) and it works best on short, simple sentences
 - Words will sometimes show the wrong meaning
-- Hiragana-only text is split one way only, so some sentences come out segmented wrongly
-
+- Hiragana-only text can still split wrong sometimes, even WITH three tries.
 ## Repo layout
 
 - Root: the extension
@@ -54,7 +53,9 @@ If you would like a rough translation along with the word-by-word breakdown, the
 - If you want to rebuild the dictionary yourself, here's [jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases) and `JMdict_e.gz` from [EDRDG](http://ftp.edrdg.org/pub/Nihongo/). Unzip both into `experiments/data/` then run `node build-dict.js` from inside `experiments/`.
 - `experiments/regress.js`: regression tests, run `npm install` then `node regress.js` inside `experiments/` to check nothing broke.
 - `experiments/build-ngram.js` builds `data/ngram.json` from Tatoeba
-- `experiments/beam.mjs` scores kanji conversion on test sets including new ones that haven't been seen by the model that I hand-write
+- `experiments/build-examples.js` builds `data/examples.json` from Tatoeba's Japanese indices and English sentences
+- `experiments/sets.js` has kanji-conversion test sets, including "fresh" ones that aren't in the training data.
+- `experiments/beam.mjs` scores the real extension code on those sets
 - `experiments/lm.mjs`, `pipeline.mjs` were earlier experiments with a 500mb language model and the first translation tests, they're kept for history
 
 ## Credits
