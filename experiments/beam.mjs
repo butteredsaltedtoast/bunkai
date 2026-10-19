@@ -1,51 +1,38 @@
 import {createRequire} from "module";
-import {score} from "./ngram.mjs";
 const require = createRequire(import.meta.url);
-const {options, cases, fresh, fresh2, fresh3} = require("./kanjify.js");
+const fs = require("fs");
+const vm = require("vm");
+const kuromoji = require("kuromoji");
+const {cases, fresh, fresh2, fresh3} = require("./sets.js");
 
-export async function beam(s, width = 3) {
-    let beams = [{text: "", score: 0}];
-    for(const choices of options(s)) {
-        if(choices.length === 1) {
-            beams = beams.map(b => ({text: b.text + choices[0], score: b.score}));
-            continue;
-        }
-        const next = [];
-        for(const b of beams)
-            for(const c of choices) {
-                const text = b.text + c;
-                next.push({text, score: await score(text)});
-            }
-        next.sort((a, b) => b.score - a.score);
-        beams = next.slice(0, width);
-    }
-    return beams[0].text;
-}
+const ctx = {dict: require("./dict"), console};
+vm.createContext(ctx);
+for(const f of ["deinflect.js", "segment.js", "ngram.js", "kanjify.js"])
+    vm.runInContext(fs.readFileSync("../" + f, "utf8"), ctx);
+ctx.setNgram(JSON.parse(fs.readFileSync("../data/ngram.json", "utf8")));
 
-let totalcorrect = 0, total = 0;
-async function run(name, set) {
+const t = await new Promise((res, rej) => 
+    kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((e, tk) => e ? rej(e) : res(tk)));
+
+let totalCorrect = 0, total = 0;
+function run(name, set) {
     let pass = 0;
     console.log(`---tests of set ${name}---`);
     for(const [input, want] of set) {
-        const got = await beam(input);
-        const ok = got === want;
+        const got = ctx.beam(t, input).text;
+        const ok = [].concat(want).includes(got);
         if(ok) {
             pass++;
-            totalcorrect++;
+            totalCorrect++;
         }
-
-        console.log(`${ok ? "PASS" : "FAIL"} ${got}${ok ? "" : "   (want " + want + ")"}`);
         total++;
+        console.log(`${ok ? "PASS" : "FAIL"} ${got}${ok ? "" : "    (want " + want + ")"}`);
     }
     console.log(`${name}: ${pass}/${set.length}\n`);
 }
 
-if(import.meta.url === `file://${process.argv[1]}`) {
-    totalcorrect = 0;
-    total = 0;
-    await run("old", cases);
-    await run("fresh", fresh);
-    await run("fresh2", fresh2);
-    await run("fresh3", fresh3);
-    console.log(`total: ${totalcorrect}/${total}\n`);
-}
+run("old", cases);
+run("fresh", fresh);
+run("fresh2", fresh2);
+run("fresh3", fresh3);
+console.log(`total: ${totalCorrect}/${total}`);
