@@ -56,4 +56,4 @@ for(const [word, list] of byWord) {
 
 fs.writeFileSync("../data/example.json", JSON.stringify({sentences, index}));
 console.log("words:", Object.keys(index).length, " sentences:", sentences.length);
-console.log("file size:", fs.statSync("../data/example.json").size);
+console.log("file size:", fs.statSync("../data/examples.json").size);

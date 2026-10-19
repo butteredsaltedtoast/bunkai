@@ -28,7 +28,7 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     if(err)
         throw err;
     ctx.setNgram(JSON.parse(fs.readFileSync("../data/ngram.json", "utf8")));
-    ctx.setExamples(JSON.parse(fs.readFileSync("../data/example.json", "utf8")));
+    ctx.setExamples(JSON.parse(fs.readFileSync("../data/examples.json", "utf8")));
     const kana = s => ctx.segment(s).map(w => w.surface);
     const kanji = s => ctx.merge(t.tokenize(s)).map(c => c.surface);
 
