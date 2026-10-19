@@ -13,6 +13,9 @@ const againBtn = document.getElementById("again");
 const goodBtn = document.getElementById("good");
 const startBtn = document.getElementById("start-review");
 const reviewStatus = document.getElementById("review-status");
+const progress = document.getElementById("review-progress");
+const mastery = document.getElementById("mastery");
+const resetBtn = document.getElementById("reset-review");
 
 // settings
 
@@ -24,6 +27,8 @@ function flash() {
 function renderVocab() {
     chrome.storage.local.get(["vocab"], (data) => {
         const vocab = data.vocab || [];
+        const mastered = vocab.filter(v => (v.box || 0) >= 3).length;
+        mastery.textContent = vocab.length ? `${mastered} / ${vocab.length} mastered` : "";
         document.getElementById("vocab-list").innerHTML = "";
         vocab.forEach((v, i) => {
             const row = document.createElement("div");
@@ -102,6 +107,7 @@ function showNext() {
     }
     card.hidden = false;
     startBtn.hidden = true;
+    progress.textContent = `${queue.length + 1} left`;
     front.textContent = current.dictionary_form;
     back.textContent = `${current.reading}: ${current.meaning}`;
     back.hidden = true;
@@ -134,3 +140,12 @@ showBtn.addEventListener("click", () => {
 });
 againBtn.addEventListener("click", () => answer(false));
 goodBtn.addEventListener("click", () => answer(true));
+resetBtn.addEventListener("click", () => {
+    chrome.storage.local.get(["vocab"], (data) => {
+        const vocab = (data.vocab || []).map(v => ({...v, box: 0}));
+        chrome.storage.local.set({vocab}, () => {
+            renderVocab();
+            reviewStatus.textContent = "progress reset";
+        });
+    });
+});
