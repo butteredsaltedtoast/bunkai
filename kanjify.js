@@ -10,8 +10,8 @@ function commonSuffix(a, b) {
     return n;
 }
 
-function options(s) {
-    return segment(s).map(w => {
+function optionsFor(words) {
+    return words.map(w => {
         const keep = [{text: w.surface, base: w.bases[0]}];
         if(CHEAP.includes(w.surface) || KEEP_KANA.includes(w.surface))
             return keep;
@@ -29,8 +29,10 @@ function options(s) {
                     continue;
                 }
                 for(const e of common((dict.get(base) || []).filter(isVerbish))) {
-                    if(e.s[0].m?.includes("uk"))
+                    if(e.s[0].m?.includes("uk")) {
+                        outs.push({text: w.surface, base});
                         continue;
+                    }
                     const kb = e.k[0]?.t;
                     if(!kb)
                         continue;
@@ -49,10 +51,14 @@ function options(s) {
     });
 }
 
+function options(s) {
+    return optionsFor(segment(s));
+}
 
-function beam(t, s, width = 3) { // returns {text, score, picks} with word i having choice picks[i]
+
+function beamWords(t, words, width = 3) { // returns {text, score, picks} with word i having choice picks[i]
     let beams = [{text: "", score: 0, picks: []}];
-    for(const choices of options(s)) {
+    for(const choices of optionsFor(words)) {
         if(choices.length === 1) {
             beams = beams.map(b => ({text: b.text + choices[0].text, score: b.score, picks: [...b.picks, choices[0]]}));
             continue;
@@ -67,4 +73,16 @@ function beam(t, s, width = 3) { // returns {text, score, picks} with word i hav
         beams = next.slice(0, width);
     }
     return beams[0];
+}
+
+const SEG_WEIGHT = 1;
+function beam(t, s, width = 3) {
+    let best = null;
+    for(const words of segmentK(s, 3)) {
+        const b = beamWords(t, words, width);
+        const score = ngramScore(t, b.text) - SEG_WEIGHT * words.cost;
+        if(!best || score > best.score)
+            best = {text: b.text, picks: b.picks, words, score};
+    }
+    return best;
 }

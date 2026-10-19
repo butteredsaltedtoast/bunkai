@@ -144,5 +144,7 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     check("examples-missing", ctx.examplesFor("めめめめ"), []);
     check("analyze-examples", rain.words[2].examples.length > 0, true);
 
+    check("multi-offshore", ctx.beam(t, "あしたはやくおきなければなりません").text, "明日早く起きなければなりません");
+
     console.log(`\n${pass} passed, ${fail} failed`);
 })

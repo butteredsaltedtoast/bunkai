@@ -3,8 +3,9 @@ function kanaChunks(t, text) {
     const chunks = [];
     for(const run of runs) {
         const isHira = /^[\u3041-\u309f]/.test(run);
-        const words = isHira ? segment(run) : [{surface: run, bases: [run]}];
-        const picks = isHira ? beam(t, run).picks : []; // picks[i] works with words[i] so this is fine.
+        const b = isHira ? beam(t, run) : null;
+        const words = b ? b.words : [{surface: run, bases: [run]}];
+        const picks = b ? b.picks : [];
         words.forEach((w, i) => {
             const base = w.bases[0];
             const isVerb = base !== w.surface;
@@ -59,8 +60,8 @@ function kanjiParts(t, text) {
             parts.push({base: chunk});
             continue;
         }
-        const words = segment(chunk);
-        const picks = beam(t, chunk).picks;
+        const b = beam(t, chunk);
+        const words = b.words, picks = b.picks;
         words.forEach((w, i) => {
             const text = picks[i]?.text || w.surface;
             if(text === w.surface) {
