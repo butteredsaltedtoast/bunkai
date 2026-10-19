@@ -129,6 +129,26 @@
             .kanji {
                 font: 20px "Yu Mincho", serif;
                 margin: 16px 0;
+                line-height: 2.4;
+            }
+            .kanji rt {
+                font: 10px system-ui, sans-serif;
+                color: var(--muted);
+            }
+
+            .ex-sentence {
+                margin: 6px 0 0 12px;
+                padding-left: 8px;
+                border-left: 2px solid var(--line);
+            }
+
+            .ex-jp {
+                font: 15px "Yu Mincho", serif;
+            }
+
+            .ex-en {
+                font-size: 12px;
+                color: var(--muted);
             }
 
             .word {
@@ -352,19 +372,38 @@
                     return;
                 const r = analyzeWith(T, text);
                 out.replaceChildren();
-                if(r.kanji)
-                    out.append(el("div", "kanji", "in kanji: " + r.kanji));
-                let k = 0;
+                if(r.kanjiParts.length) {
+                    const k = el("div", "kanji", "in kanji: ");
+                    for(const p of r.kanjiParts) {
+                        if(!p.ruby) {
+                            k.append(p.base);
+                            continue;
+                        }
+                        const ruby = el("ruby", "", p.base);
+                        ruby.append(el("rt", "", p.ruby));
+                        k.append(ruby);
+                    }
+                    out.append(k);
+                }
+                let i = 0;
                 for(const w of r.words) {
                     const row = el("div", "word");
-                    row.style.animationDelay = `${k++ * 40}ms`;
+                    row.style.animationDelay = `${i++ * 40}ms`;
                     const top = el("div");
-                    top.append(el("span", "surface", w.word), el("span", "reading", ` (${w.reading})`));
+                    top.append(el("span", "surface", w.word));
+                    if(w.reading)
+                        top.append(el("span", "reading", ` (${w.reading})`));
                     if(w.part_of_speech)
                         top.append(el("span", "pos", w.part_of_speech));
                     row.append(top, el("div", "", w.meaning));
                     if(w.role)
                         row.append(el("div", "role", w.role));
+
+                    for(const [jp, en] of (w.examples || []).slice(0, 2)) {
+                        const ex = el("div", "ex-sentence");
+                        ex.append(el("div", "ex-jp", jp), el("div", "ex-en", en));
+                        row.append(ex);
+                    }
                     out.append(row);
                 }
             });
