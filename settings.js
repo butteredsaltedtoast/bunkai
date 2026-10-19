@@ -35,7 +35,7 @@ function renderVocab() {
         vocab.forEach((v, i) => {
             const row = document.createElement("div");
             row.className = "vocab-row";
-            row.textContent = `${v.dictionary_form} (${v.reading}): ${v.meaning}`;
+            row.textContent = `${(v.box || 0) >= 3 ? "✓ " : ""}${v.dictionary_form} (${v.reading}): ${v.meaning}`; // words you've mastered get a little checkmark.
             const del = document.createElement("button");
             del.textContent = "✕";
             del.addEventListener("click", () => {
