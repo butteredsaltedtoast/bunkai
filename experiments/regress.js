@@ -216,5 +216,8 @@ kuromoji.builder({dicPath: "node_modules/kuromoji/dict"}).build((err, t) => {
     check("examples-fallback-key", ctx.examplesFor(null, "猫").length > 0, true);
     check("examples-uses-word", ctx.examplesFor("猫").some(p => p[0].includes("猫")), true);
 
+    // that's enough tests!! i think this tests existing functionality fine.
     console.log(`\n${pass} passed, ${fail} failed`);
+
+    console.log("that's all existing functional stuff tested. as more features come, more will be added. by me!");
 })

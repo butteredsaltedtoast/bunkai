@@ -35,10 +35,9 @@ If you would like a rough translation along with the word-by-word breakdown, the
 
 ## Install
 
-1. Clone this repo
-2. Go to `chrome://extensions`
-3. Turn on **Developer mode**
-4. Click **Load unpacked** and pick the folder
+1. Download `bunkai-v3.0.zip` from the [latest release](https://github.com/butteredsaltedtoast/bunkai/releases/latest) and unzip it
+2. Go to `chrome://extensions` and turn on **Developer mode**
+3. Click **Load unpacked** and pick the unzipped folder
 
 ## Known issues
 

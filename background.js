@@ -10,7 +10,7 @@ async function ensureOffscreen() {
 }
 ensureOffscreen();
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => { // for translator
     if(request.type === "ANALYZE_TEXT") {
         ensureOffscreen().then(() => chrome.runtime.sendMessage({type: "OFFSCREEN_ANALYZE", text: request.text})).then(sendResponse);
         return true;
@@ -21,12 +21,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-chrome.commands.onCommand.addListener((command, tab) => {
+chrome.commands.onCommand.addListener((command, tab) => { // for shortcut
     if(command === "analyze-selection")
         chrome.tabs.sendMessage(tab.id, {type: "SHORTCUT"});
 });
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(() => { // show right click stuff
     chrome.contextMenus.create({
         id: "bunkai",
         title: "break down with bunkai (分解)",

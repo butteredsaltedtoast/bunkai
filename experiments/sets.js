@@ -101,4 +101,6 @@ const fresh4 = [ // test for multi-split beam!!!
     ["こうえんでしゃしんをとりました", "公園で写真を撮りました"],
 ]
 
+// that's all the tests for now... more coming soon perhaps?
+
 module.exports = {cases, fresh, fresh2, fresh3, fresh4};

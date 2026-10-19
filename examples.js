@@ -17,3 +17,4 @@ function examplesFor(...keys) {
             return EX.index[k].map(i => EX.sentences[i]);
     return [];
 }
+// for example sentences!

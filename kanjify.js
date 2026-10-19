@@ -76,7 +76,7 @@ function beamWords(t, words, width = 3) { // returns {text, score, picks} with w
 }
 
 const SEG_WEIGHT = 1;
-function beam(t, s, width = 3) {
+function beam(t, s, width = 3) { // beam search!!
     let best = null;
     for(const words of segmentK(s, 3)) {
         const b = beamWords(t, words, width);
