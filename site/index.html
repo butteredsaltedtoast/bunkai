@@ -316,6 +316,7 @@
         <script src="../ngram.js"></script>
         <script src="../kanjify.js"></script>
         <script src="../numbers.js"></script>
+        <script src="../examples.js"></script>
         <script src="../analyze.js"></script>
         <script>
             const go = document.getElementById("go");
@@ -330,6 +331,7 @@
                 }
                 await loadDict("../");
                 await loadNgram("../");
+                await loadExamples("../");
                 T = t;
                 status.textContent = "ready!";
                 go.disabled = false;
